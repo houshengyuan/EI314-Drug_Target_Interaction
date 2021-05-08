@@ -1,0 +1,23 @@
+{'seq_window_lengths': 12, 'smi_window_lengths': 8, 'num_windows': 32, 'max_seq_len': 1000, 'max_smi_len': 100, 'learning_rate': 0.00025, 'num_epoch': 50, 'batch_size': 128, 'train_path': '.\\train', 'validation_path': '.\\validation', 'log_dir': '.\\log', 'drop_rate': 0.2}
+None
+---FINAL RESULTS-----
+Validation Performance 
+Loss: 1.1894875417914859
+accuracy: 0.7481874227523804
+precision: 0.9030475616455078
+recall: 0.7576346397399902
+F1: 0.8217825889587402
+TP: 929.5309448242188
+TN: 433.07965087890625
+FP: 145.48672485351562
+FN: 315.6371765136719
+Train Performance 
+Loss: 0.031649315830748405
+accuracy: 0.9897118210792542
+precision: 0.9956623911857605
+recall: 0.9920023083686829
+F1: 0.9938245415687561
+TP: 11035.5859375
+TN: 4974.2744140625
+FP: 62.02081298828125
+FN: 88.10108947753906
