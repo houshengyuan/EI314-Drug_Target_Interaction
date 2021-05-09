@@ -26,6 +26,13 @@ history = History()
 log_dir = os.path.join(params['log_dir'],time.asctime(time.localtime(time.time())).replace(" ", "_").replace(":", "_"))
 filepath=os.path.join(log_dir,"log.txt")
 
+class AttentionDTI(keras.Model):
+    def __init__(self):
+      super().__init__(self)
+
+    def call(self,inputs,training=None,mask=None):
+      pass
+
 def train():
     pass
 

@@ -82,8 +82,8 @@ class GNN(keras.Model):
      return tf.expand_dims(tf.reduce_mean(x,axis=0),0)
 
 
-   def call(self, inputs, mask=None):
-      atom_A(inputs)
+   def call(self,inputs,training=None,mask=None):
+       atom_A(inputs)
 
 
 if __name__=="__main__":
