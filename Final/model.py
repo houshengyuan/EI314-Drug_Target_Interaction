@@ -26,5 +26,13 @@ history = History()
 log_dir = os.path.join(params['log_dir'],time.asctime(time.localtime(time.time())).replace(" ", "_").replace(":", "_"))
 filepath=os.path.join(log_dir,"log.txt")
 
+def train():
+    pass
+
+
+def validation():
+    pass
+
+
 if __name__ == "main":
     pass
