@@ -1,2 +1,2 @@
-# CS410-Toxicity_prediction
-Drug-Target Interaction Prediction
+# Drug-Target Interaction Prediction
+This is the course project for EI314-Bioinformatics
