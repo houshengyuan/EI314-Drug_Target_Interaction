@@ -92,22 +92,18 @@ def sampling(data=None):
     #  print(i)
     #  neg.loc[i,'FD']=(dict1[neg.loc[i,'SMILES']] if neg.loc[i,'SMILES'] in dict1 else 0)
     #  neg.loc[i,'FT']=(dict2[neg.loc[i,'FASTA']] if neg.loc[i,'FASTA'] in dict2 else 0)
-    print("ok1")
     #tmp1=np.array(neg['FD']).reshape(1,-1)
     #tmp2=np.array(neg['FT']).reshape(1,-1)
-    print("ok2")
     #weight=(1+tmp1)*(1+tmp2)/np.sum((1+tmp1)*(1+tmp2))
-    print("ok3")
     sample=np.random.choice(a=neg.index.values,size=2000,replace=False).tolist()#p=weight.flatten()).tolist()
-    print("ok4")
     neg.loc[sample].to_csv("train_neg.csv",mode="w+",index=False)
 
 
 if __name__=="__main__":
-    #file_path="data/pre_sample.csv"
+    file_path="data/pre_sample.csv"
     print("------------------------------------------",file=log)
-    #data=read_in(file_path)
-    #analysis1(data)
-    #analysis2(data)
-    #presample(data)
+    data=read_in(file_path)
+    analysis1(data)
+    analysis2(data)
+    presample(data)
     sampling()

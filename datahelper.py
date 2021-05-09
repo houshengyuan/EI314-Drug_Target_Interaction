@@ -25,6 +25,12 @@ CHARISOSMILEN = 64
 
 
 def map_into_int(str_item,type="SMILES"):
+   """
+   transform SMILES/FASTA into integer label
+   :param str_item:list of SMILES/FASTA sequence
+   :param type:SMILES or FASTA
+   :return:list of SMILES/FASTA encodings
+   """
    result=[]
    for t in str_item:
      label=[]
@@ -37,7 +43,13 @@ def map_into_int(str_item,type="SMILES"):
    return result
 
 
-def handle_sequence(str_item,params,type="SMILES"):
+def padding_sequence(str_item,params,type="SMILES"):
+   """
+   :param str_item:list of SMILES/FASTA
+   :param params: parameter dictionary(maximimum SMILES/FASTA length)
+   :param type: SMILES or FASTA
+   :return: padding result of sequence <PAD>=0
+   """
    new_seq=map_into_int(str_item,type=type)
    if type=="SMILES":
     return pad_sequences(new_seq,maxlen=params['max_smi_len'],padding='post',truncating='post',value=0)

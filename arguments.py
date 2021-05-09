@@ -11,8 +11,8 @@ params={
 'learning_rate':2.5e-4,
 'num_epoch':50,
 'batch_size':128,
-'train_path':".\\train",
-'validation_path':".\\validation",
+'train_path':"..\\train",
+'validation_path':"..\\validation",
 'log_dir':".\\log",
 'drop_rate':0.2
 }

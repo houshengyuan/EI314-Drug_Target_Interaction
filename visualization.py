@@ -66,6 +66,6 @@ def plotLoss(history,filepath):
    plt.close()
 
 if __name__=="__main__":
- model_dir="log/Tue_May__4_12_25_33_2021"
+ model_dir= "DeepDTA/log/Tue_May__4_12_25_33_2021"
  model_result=pickle.load(open(os.path.join(model_dir,"result.pkl"),"rb"))
  plotLoss(model_result,model_dir)

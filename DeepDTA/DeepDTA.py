@@ -122,8 +122,8 @@ def prepare_interaction_pairs(datapath, params, type="train"):
     :return: 返回[drug] [target] [affinity]
     """
     data = pd.read_csv(datapath, encoding='utf-8')
-    drugs = handle_sequence(data['SMILES'].tolist(), type="SMILES", params=params)
-    targets = handle_sequence(data['FASTA'].tolist(), type="FASTA", params=params)
+    drugs = padding_sequence(data['SMILES'].tolist(), type="SMILES", params=params)
+    targets = padding_sequence(data['FASTA'].tolist(), type="FASTA", params=params)
     affinity = np.array(data['Label'])
     drugcount = len(set(data['SMILES'].tolist()))
     targetcount = len(set(data['FASTA'].tolist()))
@@ -137,8 +137,11 @@ def prepare_interaction_pairs(datapath, params, type="train"):
 
 
 def datasplit(params):
-    pos = pd.read_csv("data\\train_pos.csv", encoding='utf-8')
-    neg = pd.read_csv("data\\train_neg.csv", encoding='utf-8')
+    """
+    split all data into train and dev set with ratio 9:1
+    """
+    pos = pd.read_csv("..\\data\\train_pos.csv", encoding='utf-8')
+    neg = pd.read_csv("..\\data\\train_neg.csv", encoding='utf-8')
     neg.drop(columns=['FD', 'FT'], inplace=True)
     train_data_pos = pos.sample(frac=0.9, replace=False, random_state=0, axis=0)
     val_data_pos = pos[~pos.index.isin(train_data_pos.index)]
