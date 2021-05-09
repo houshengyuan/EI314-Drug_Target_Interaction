@@ -1,6 +1,5 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-
 import tensorflow as tf
 import keras
 from rdkit import Chem
@@ -44,12 +43,29 @@ def atom_property(smiles):
     atom_aromatic = [x.GetIsAromatic() for x in atom_set]
     atom_hybridization = [x.GetHybridization() for x in atom_set]
     atom_IsInRing = [x.IsInRing() for x in atom_set]
+    atom_FormalCharge = [x.GetFormalCharge() for x in atom_set]
+    atom_ChiralTag = [x.GetChiralTag() for x in atom_set]
+    atom_IsIn5Ring = [x.IsInRingSize(5) for x in atom_set]
+    atom_IsIn6Ring = [x.IsInRingSize(6) for x in atom_set]
     return np.array(atom_symbol),np.array(atom_numH),np.array(atom_degree),np.array(atom_valence),\
-           np.array(atom_aromatic),np.array(atom_hybridization),np.array(atom_IsInRing)
+           np.array(atom_aromatic),np.array(atom_hybridization),np.array(atom_IsInRing),\
+           np.array(atom_FormalCharge),np.array(atom_ChiralTag),np.array(atom_IsIn5Ring),\
+           np.array(atom_IsIn6Ring)
 
 
 def bond_properties(smiles):
-    pass
+    mol = Chem.MolFromSmiles(smiles)
+    bond_set =mol.GetBonds()
+    bond_dict_peratom=defaultdict(lambda :[])
+    for bond in bond_set:
+      s,e=bond.GetBeginAtomIdx(),bond.GetEndAtomIdx()
+      bond_symbol=bond_dict[str(bond.GetBondType())]
+      bond_inring = bond.IsInRing()
+      bond_inring5 = bond.IsInRingSize(5)
+      bond_inring6 = bond.IsInRingSize(6)
+      bond_dict_peratom[s].append((e,bond_symbol,bond_inring,bond_inring5,bond_inring6))
+      bond_dict_peratom[e].append((s,bond_symbol,bond_inring,bond_inring5,bond_inring6))
+    return bond_dict_peratom
 
 
 def extract_fingerprints():
@@ -59,7 +75,6 @@ def extract_fingerprints():
 def extract_graph(smiles_list):
     """
     extract the graph structure
-    :return:
     """
 
     pass
@@ -88,4 +103,7 @@ class GNN(keras.Model):
 
 if __name__=="__main__":
     smiles="COC1=C(OC)C=C2C(N)=NC(=NC2=C1)N1CCN(CC1)C(=O)C1CCCO1"
-    atom_property(smiles)
+    mol = Chem.MolFromSmiles(smiles)
+    bond_set = mol.GetBonds()
+    for bond in bond_set:
+     print(bond.GetBondType())
