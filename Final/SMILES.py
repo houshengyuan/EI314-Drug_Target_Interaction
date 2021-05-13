@@ -68,7 +68,10 @@ def bond_properties(smiles):
     return bond_dict_peratom
 
 
-def extract_fingerprints():
+def extract_fingerprints(atom,bond,R):
+    """
+    extract r-radius subgraph
+    """
     pass
 
 
