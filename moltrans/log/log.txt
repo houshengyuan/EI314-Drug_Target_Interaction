@@ -1,0 +1,124 @@
+32270/32270 - 333s - loss: 0.8981 - binary_accuracy: 0.5584 - precision: 0.0933 - recall: 0.0108 - f1_score: 0.0181 - true_positive: 0.3109 - true_negative: 35.3703 - false_positive: 0.2733 - false_negative: 27.9465 - val_loss: 0.9198 - val_
+binary_accuracy: 0.5577 - val_precision: 0.0000e+00 - val_recall: 0.0000e+00 - val_f1_score: 0.0000e+00 - val_true_positive: 0.0000e+00 - val_true_negative: 35.0877 - val_false_positive: 0.0000e+00 - val_false_negative: 27.8246
+Epoch 2/60
+32270/32270 - 330s - loss: 0.6848 - binary_accuracy: 0.5581 - precision: 0.4952 - recall: 0.1428 - f1_score: 0.2087 - true_positive: 4.0178 - true_negative: 31.6455 - false_positive: 3.9980 - false_negative: 24.2396 - val_loss: 0.6877 - val_
+binary_accuracy: 0.5566 - val_precision: 0.0614 - val_recall: 0.0025 - val_f1_score: 0.0048 - val_true_positive: 0.0702 - val_true_negative: 34.9474 - val_false_positive: 0.1404 - val_false_negative: 27.7544
+Epoch 3/60
+32270/32270 - 331s - loss: 0.6815 - binary_accuracy: 0.5655 - precision: 0.5335 - recall: 0.2107 - f1_score: 0.2905 - true_positive: 5.9287 - true_negative: 30.2079 - false_positive: 5.4356 - false_negative: 22.3287 - val_loss: 0.6956 - val_
+binary_accuracy: 0.5555 - val_precision: 0.2836 - val_recall: 0.0155 - val_f1_score: 0.0292 - val_true_positive: 0.4386 - val_true_negative: 34.4912 - val_false_positive: 0.5965 - val_false_negative: 27.3860
+Epoch 4/6032270/32270 - 333s - loss: 0.6771 - binary_accuracy: 0.5759 - precision: 0.5463 - recall: 0.2690 - f1_score: 0.3511 - true_positive: 7.5762 - true_negative: 29.2238 - false_positive: 6.4198 - false_negative: 20.6812 - val_loss: 0.6764 - val_
+binary_accuracy: 0.5708 - val_precision: 0.5123 - val_recall: 0.3415 - val_f1_score: 0.4057 - val_true_positive: 9.6667 - val_true_negative: 26.2456 - val_false_positive: 8.8421 - val_false_negative: 18.1579
+Epoch 5/60
+32270/32270 - 334s - loss: 0.6721 - binary_accuracy: 0.5879 - precision: 0.5660 - recall: 0.3081 - f1_score: 0.3914 - true_positive: 8.6436 - true_negative: 28.9228 - false_positive: 6.7208 - false_negative: 19.6139 - val_loss: 0.6877 - val_
+binary_accuracy: 0.5678 - val_precision: 0.5091 - val_recall: 0.0498 - val_f1_score: 0.0893 - val_true_positive: 1.4035 - val_true_negative: 34.3158 - val_false_positive: 0.7719 - val_false_negative: 26.4211
+Epoch 6/60
+32270/32270 - 334s - loss: 0.6757 - binary_accuracy: 0.5804 - precision: 0.5416 - recall: 0.2509 - f1_score: 0.3240 - true_positive: 7.0475 - true_negative: 30.0416 - false_positive: 5.6020 - false_negative: 21.2099 - val_loss: 0.6827 - val_
+binary_accuracy: 0.5731 - val_precision: 0.5572 - val_recall: 0.1260 - val_f1_score: 0.2017 - val_true_positive: 3.5439 - val_true_negative: 32.5088 - val_false_positive: 2.5789 - val_false_negative: 24.2807
+Epoch 7/60
+32270/32270 - 335s - loss: 0.6797 - binary_accuracy: 0.5700 - precision: 0.5299 - recall: 0.2358 - f1_score: 0.3147 - true_positive: 6.6634 - true_negative: 29.7624 - false_positive: 5.8812 - false_negative: 21.5941 - val_loss: 0.6768 - val_
+binary_accuracy: 0.5669 - val_precision: 0.5095 - val_recall: 0.2592 - val_f1_score: 0.3391 - val_true_positive: 7.3333 - val_true_negative: 28.3333 - val_false_positive: 6.7544 - val_false_negative: 20.4912
+Epoch 8/60
+32270/32270 - 335s - loss: 0.6669 - binary_accuracy: 0.5919 - precision: 0.5695 - recall: 0.3355 - f1_score: 0.4131 - true_positive: 9.4317 - true_negative: 28.3921 - false_positive: 7.2515 - false_negative: 18.8257 - val_loss: 0.6733 - val_
+binary_accuracy: 0.5845 - val_precision: 0.5589 - val_recall: 0.2944 - val_f1_score: 0.3795 - val_true_positive: 8.1228 - val_true_negative: 28.6491 - val_false_positive: 6.4386 - val_false_negative: 19.7018
+Epoch 9/60
+32270/32270 - 335s - loss: 0.6560 - binary_accuracy: 0.6103 - precision: 0.5887 - recall: 0.4046 - f1_score: 0.4722 - true_positive: 11.3842 - true_negative: 27.6139 - false_positive: 8.0297 - false_negative: 16.8733 - val_loss: 0.6598 - val
+_binary_accuracy: 0.6035 - val_precision: 0.5772 - val_recall: 0.3470 - val_f1_score: 0.4276 - val_true_positive: 9.7544 - val_true_negative: 28.2281 - val_false_positive: 6.8596 - val_false_negative: 18.0702
+Epoch 10/60
+32270/32270 - 335s - loss: 0.6425 - binary_accuracy: 0.6263 - precision: 0.6064 - recall: 0.4587 - f1_score: 0.5152 - true_positive: 12.9208 - true_negative: 27.1030 - false_positive: 8.5406 - false_negative: 15.3366 - val_loss: 0.6717 - val
+_binary_accuracy: 0.6099 - val_precision: 0.5916 - val_recall: 0.4115 - val_f1_score: 0.4794 - val_true_positive: 11.1579 - val_true_negative: 27.2105 - val_false_positive: 7.8772 - val_false_negative: 16.6667
+Epoch 11/60
+32270/32270 - 335s - loss: 0.6421 - binary_accuracy: 0.6285 - precision: 0.6011 - recall: 0.4816 - f1_score: 0.5280 - true_positive: 13.5564 - true_negative: 26.6059 - false_positive: 9.0376 - false_negative: 14.7010 - val_loss: 0.6806 - val
+_binary_accuracy: 0.5940 - val_precision: 0.5422 - val_recall: 0.4415 - val_f1_score: 0.4811 - val_true_positive: 12.4912 - val_true_negative: 24.8772 - val_false_positive: 10.2105 - val_false_negative: 15.3333
+Epoch 12/60
+32270/32270 - 335s - loss: 0.6339 - binary_accuracy: 0.6424 - precision: 0.6160 - recall: 0.5212 - f1_score: 0.5590 - true_positive: 14.6376 - true_negative: 26.4139 - false_positive: 9.2297 - false_negative: 13.6198 - val_loss: 0.6518 - val
+_binary_accuracy: 0.6210 - val_precision: 0.6023 - val_recall: 0.4498 - val_f1_score: 0.5092 - val_true_positive: 12.2281 - val_true_negative: 26.8421 - val_false_positive: 8.2456 - val_false_negative: 15.5965
+Epoch 13/60
+32270/32270 - 335s - loss: 0.6210 - binary_accuracy: 0.6526 - precision: 0.6249 - recall: 0.5415 - f1_score: 0.5752 - true_positive: 15.2218 - true_negative: 26.4772 - false_positive: 9.1663 - false_negative: 13.0356 - val_loss: 0.6515 - val
+_binary_accuracy: 0.6154 - val_precision: 0.5728 - val_recall: 0.5222 - val_f1_score: 0.5400 - val_true_positive: 14.2456 - val_true_negative: 24.4737 - val_false_positive: 10.6140 - val_false_negative: 13.5789
+Epoch 14/60
+32270/32270 - 335s - loss: 0.6104 - binary_accuracy: 0.6689 - precision: 0.6416 - recall: 0.5771 - f1_score: 0.6025 - true_positive: 16.2257 - true_negative: 26.5149 - false_positive: 9.1287 - false_negative: 12.0317 - val_loss: 0.6546 - val
+_binary_accuracy: 0.6157 - val_precision: 0.5737 - val_recall: 0.5199 - val_f1_score: 0.5386 - val_true_positive: 14.2105 - val_true_negative: 24.5263 - val_false_positive: 10.5614 - val_false_negative: 13.6140
+Epoch 15/60
+32270/32270 - 335s - loss: 0.6082 - binary_accuracy: 0.6696 - precision: 0.6470 - recall: 0.5650 - f1_score: 0.5960 - true_positive: 15.8832 - true_negative: 26.9050 - false_positive: 8.7386 - false_negative: 12.3743 - val_loss: 0.6431 - val
+_binary_accuracy: 0.6378 - val_precision: 0.5958 - val_recall: 0.5047 - val_f1_score: 0.5421 - val_true_positive: 14.2982 - val_true_negative: 25.8246 - val_false_positive: 9.2632 - val_false_negative: 13.5263
+Epoch 16/60                                                                                                                                                                                      
+32270/32270 - 335s - loss: 0.5972 - binary_accuracy: 0.6816 - precision: 0.6480 - recall: 0.6166 - f1_score: 0.6272 - true_positive: 17.3406 - true_negative: 26.2119 - false_positive: 9.4317 - false_negative: 10.9168 - val_loss: 0.6581 - val
+_binary_accuracy: 0.6247 - val_precision: 0.6019 - val_recall: 0.4611 - val_f1_score: 0.5156 - val_true_positive: 12.8947 - val_true_negative: 26.4035 - val_false_positive: 8.6842 - val_false_negative: 14.9298
+Epoch 17/60
+32270/32270 - 335s - loss: 0.5811 - binary_accuracy: 0.6967 - precision: 0.6639 - recall: 0.6399 - f1_score: 0.6470 - true_positive: 18.0257 - true_negative: 26.4970 - false_positive: 9.1465 - false_negative: 10.2317 - val_loss: 0.6559 - val
+_binary_accuracy: 0.6154 - val_precision: 0.5601 - val_recall: 0.5189 - val_f1_score: 0.5345 - val_true_positive: 14.7193 - val_true_negative: 24.0000 - val_false_positive: 11.0877 - val_false_negative: 13.1053
+Epoch 18/60
+32270/32270 - 335s - loss: 0.5831 - binary_accuracy: 0.6870 - precision: 0.6552 - recall: 0.6114 - f1_score: 0.6265 - true_positive: 17.2257 - true_negative: 26.6752 - false_positive: 8.9683 - false_negative: 11.0317 - val_loss: 0.7437 - val
+_binary_accuracy: 0.6174 - val_precision: 0.5703 - val_recall: 0.5555 - val_f1_score: 0.5573 - val_true_positive: 15.2281 - val_true_negative: 23.7193 - val_false_positive: 11.3684 - val_false_negative: 12.5965
+Epoch 19/60
+32270/32270 - 335s - loss: 0.5741 - binary_accuracy: 0.6989 - precision: 0.6659 - recall: 0.6452 - f1_score: 0.6508 - true_positive: 18.1406 - true_negative: 26.5168 - false_positive: 9.1267 - false_negative: 10.1168 - val_loss: 0.6521 - val
+_binary_accuracy: 0.6325 - val_precision: 0.5672 - val_recall: 0.6144 - val_f1_score: 0.5863 - val_true_positive: 17.4211 - val_true_negative: 22.3684 - val_false_positive: 12.7193 - val_false_negative: 10.4035
+Epoch 20/60
+32270/32270 - 335s - loss: 0.6100 - binary_accuracy: 0.6621 - precision: 0.6328 - recall: 0.5421 - f1_score: 0.5746 - true_positive: 15.2871 - true_negative: 27.0238 - false_positive: 8.6198 - false_negative: 12.9703 - val_loss: 0.6594 - val
+_binary_accuracy: 0.6032 - val_precision: 0.5510 - val_recall: 0.6672 - val_f1_score: 0.5989 - val_true_positive: 18.3684 - val_true_negative: 19.5789 - val_false_positive: 15.5088 - val_false_negative: 9.4561
+Epoch 21/60
+32270/32270 - 335s - loss: 0.5875 - binary_accuracy: 0.6858 - precision: 0.6506 - recall: 0.6308 - f1_score: 0.6362 - true_positive: 17.7604 - true_negative: 26.0634 - false_positive: 9.5802 - false_negative: 10.4970 - val_loss: 0.7023 - val
+_binary_accuracy: 0.6344 - val_precision: 0.5814 - val_recall: 0.5670 - val_f1_score: 0.5691 - val_true_positive: 16.0351 - val_true_negative: 23.8947 - val_false_positive: 11.1930 - val_false_negative: 11.7895
+Epoch 22/60
+32270/32270 - 335s - loss: 0.5611 - binary_accuracy: 0.7102 - precision: 0.6749 - recall: 0.6685 - f1_score: 0.6674 - true_positive: 18.8099 - true_negative: 26.5743 - false_positive: 9.0693 - false_negative: 9.4475 - val_loss: 0.6787 - val_
+binary_accuracy: 0.6141 - val_precision: 0.5878 - val_recall: 0.4922 - val_f1_score: 0.5285 - val_true_positive: 13.3509 - val_true_negative: 25.2807 - val_false_positive: 9.8070 - val_false_negative: 14.4737
+Epoch 23/60
+32270/32270 - 335s - loss: 0.5718 - binary_accuracy: 0.7011 - precision: 0.6685 - recall: 0.6457 - f1_score: 0.6514 - true_positive: 18.1426 - true_negative: 26.6574 - false_positive: 8.9861 - false_negative: 10.1149 - val_loss: 0.6669 - val
+_binary_accuracy: 0.6277 - val_precision: 0.5859 - val_recall: 0.5748 - val_f1_score: 0.5749 - val_true_positive: 15.8246 - val_true_negative: 23.6842 - val_false_positive: 11.4035 - val_false_negative: 12.0000
+Epoch 24/60
+32270/32270 - 335s - loss: 0.5364 - binary_accuracy: 0.7268 - precision: 0.6900 - recall: 0.6959 - f1_score: 0.6883 - true_positive: 19.5644 - true_negative: 26.8792 - false_positive: 8.7644 - false_negative: 8.6931 - val_loss: 0.6965 - val_
+binary_accuracy: 0.6202 - val_precision: 0.5700 - val_recall: 0.5065 - val_f1_score: 0.5305 - val_true_positive: 14.2982 - val_true_negative: 24.7193 - val_false_positive: 10.3684 - val_false_negative: 13.5263
+Epoch 25/60
+32270/32270 - 335s - loss: 0.5131 - binary_accuracy: 0.7437 - precision: 0.7119 - recall: 0.7098 - f1_score: 0.7072 - true_positive: 19.9723 - true_negative: 27.5505 - false_positive: 8.0931 - false_negative: 8.2851 - val_loss: 0.7106 - val_
+binary_accuracy: 0.6224 - val_precision: 0.5829 - val_recall: 0.5643 - val_f1_score: 0.5693 - val_true_positive: 15.5439 - val_true_negative: 23.6140 - val_false_positive: 11.4737 - val_false_negative: 12.2807
+Epoch 26/60
+32270/32270 - 335s - loss: 0.5185 - binary_accuracy: 0.7398 - precision: 0.7099 - recall: 0.6961 - f1_score: 0.6986 - true_positive: 19.5960 - true_negative: 27.6792 - false_positive: 7.9644 - false_negative: 8.6614 - val_loss: 0.7538 - val_
+binary_accuracy: 0.6210 - val_precision: 0.5746 - val_recall: 0.6045 - val_f1_score: 0.5855 - val_true_positive: 16.6667 - val_true_negative: 22.4035 - val_false_positive: 12.6842 - val_false_negative: 11.1579
+Epoch 27/60
+32270/32270 - 334s - loss: 0.5065 - binary_accuracy: 0.7452 - precision: 0.7193 - recall: 0.6842 - f1_score: 0.6924 - true_positive: 19.2594 - true_negative: 28.3604 - false_positive: 7.2832 - false_negative: 8.9980 - val_loss: 1.0397 - val_
+binary_accuracy: 0.5784 - val_precision: 0.5469 - val_recall: 0.2493 - val_f1_score: 0.3387 - val_true_positive: 7.0877 - val_true_negative: 29.3158 - val_false_positive: 5.7719 - val_false_negative: 20.7368
+Epoch 28/60
+32270/32270 - 335s - loss: 0.5134 - binary_accuracy: 0.7416 - precision: 0.7150 - recall: 0.6959 - f1_score: 0.7001 - true_positive: 19.5366 - true_negative: 27.8515 - false_positive: 7.7921 - false_negative: 8.7208 - val_loss: 0.7339 - val_
+binary_accuracy: 0.6238 - val_precision: 0.5603 - val_recall: 0.5902 - val_f1_score: 0.5721 - val_true_positive: 16.7018 - val_true_negative: 22.5439 - val_false_positive: 12.5439 - val_false_negative: 11.1228
+Epoch 29/60
+32270/32270 - 335s - loss: 0.4745 - binary_accuracy: 0.7705 - precision: 0.7379 - recall: 0.7536 - f1_score: 0.7412 - true_positive: 21.1703 - true_negative: 28.0693 - false_positive: 7.5743 - false_negative: 7.0871 - val_loss: 0.8496 - val_
+binary_accuracy: 0.6316 - val_precision: 0.5787 - val_recall: 0.5446 - val_f1_score: 0.5564 - val_true_positive: 15.4211 - val_true_negative: 24.3333 - val_false_positive: 10.7544 - val_false_negative: 12.4035
+Epoch 30/60
+32270/32270 - 335s - loss: 0.4501 - binary_accuracy: 0.7872 - precision: 0.7547 - recall: 0.7721 - f1_score: 0.7595 - true_positive: 21.7327 - true_negative: 28.5703 - false_positive: 7.0733 - false_negative: 6.5248 - val_loss: 0.9145 - val_
+binary_accuracy: 0.6260 - val_precision: 0.5607 - val_recall: 0.5954 - val_f1_score: 0.5734 - val_true_positive: 16.8772 - val_true_negative: 22.5088 - val_false_positive: 12.5789 - val_false_negative: 10.9474
+Epoch 31/60
+32270/32270 - 335s - loss: 0.5699 - binary_accuracy: 0.6903 - precision: 0.6632 - recall: 0.5751 - f1_score: 0.6072 - true_positive: 16.1743 - true_negative: 27.9446 - false_positive: 7.6990 - false_negative: 12.0832 - val_loss: 0.6913 - val
+_binary_accuracy: 0.6001 - val_precision: 0.5610 - val_recall: 0.4891 - val_f1_score: 0.5182 - val_true_positive: 13.4211 - val_true_negative: 24.3333 - val_false_positive: 10.7544 - val_false_negative: 14.4035
+Epoch 32/60
+32270/32270 - 335s - loss: 0.5879 - binary_accuracy: 0.6840 - precision: 0.6615 - recall: 0.5716 - f1_score: 0.6056 - true_positive: 16.0752 - true_negative: 27.6317 - false_positive: 8.0119 - false_negative: 12.1822 - val_loss: 0.7171 - val
+_binary_accuracy: 0.5965 - val_precision: 0.5425 - val_recall: 0.4725 - val_f1_score: 0.5008 - val_true_positive: 13.3509 - val_true_negative: 24.1930 - val_false_positive: 10.8947 - val_false_negative: 14.4737
+Epoch 33/60
+32270/32270 - 335s - loss: 0.5401 - binary_accuracy: 0.7250 - precision: 0.6977 - recall: 0.6724 - f1_score: 0.6801 - true_positive: 18.9109 - true_negative: 27.4158 - false_positive: 8.2277 - false_negative: 9.3465 - val_loss: 0.7381 - val_
+binary_accuracy: 0.6191 - val_precision: 0.5570 - val_recall: 0.5761 - val_f1_score: 0.5617 - val_true_positive: 16.2281 - val_true_negative: 22.7368 - val_false_positive: 12.3509 - val_false_negative: 11.5965
+Epoch 34/60
+32270/32270 - 335s - loss: 0.4976 - binary_accuracy: 0.7534 - precision: 0.7277 - recall: 0.7081 - f1_score: 0.7115 - true_positive: 19.8851 - true_negative: 28.2554 - false_positive: 7.3881 - false_negative: 8.3723 - val_loss: 0.7150 - val_
+binary_accuracy: 0.6146 - val_precision: 0.5625 - val_recall: 0.5604 - val_f1_score: 0.5565 - val_true_positive: 15.4386 - val_true_negative: 23.2456 - val_false_positive: 11.8421 - val_false_negative: 12.3860
+Epoch 35/60
+32270/32270 - 335s - loss: 0.4760 - binary_accuracy: 0.7681 - precision: 0.7360 - recall: 0.7454 - f1_score: 0.7365 - true_positive: 20.9624 - true_negative: 28.1208 - false_positive: 7.5228 - false_negative: 7.2950 - val_loss: 0.8482 - val_
+binary_accuracy: 0.6202 - val_precision: 0.5693 - val_recall: 0.5278 - val_f1_score: 0.5427 - val_true_positive: 14.8947 - val_true_negative: 24.1404 - val_false_positive: 10.9474 - val_false_negative: 12.9298
+Epoch 36/60
+32270/32270 - 335s - loss: 0.4627 - binary_accuracy: 0.7758 - precision: 0.7491 - recall: 0.7450 - f1_score: 0.7425 - true_positive: 20.9426 - true_negative: 28.6356 - false_positive: 7.0079 - false_negative: 7.3149 - val_loss: 0.8221 - val_
+binary_accuracy: 0.6221 - val_precision: 0.5764 - val_recall: 0.6431 - val_f1_score: 0.6027 - val_true_positive: 17.6491 - val_true_negative: 21.5263 - val_false_positive: 13.5614 - val_false_negative: 10.1754
+Epoch 37/60
+32270/32270 - 334s - loss: 0.5848 - binary_accuracy: 0.6745 - precision: 0.6501 - recall: 0.4963 - f1_score: 0.5399 - true_positive: 13.9228 - true_negative: 29.1822 - false_positive: 6.4614 - false_negative: 14.3347 - val_loss: 0.6785 - val
+_binary_accuracy: 0.5943 - val_precision: 0.5420 - val_recall: 0.4232 - val_f1_score: 0.4717 - val_true_positive: 11.9474 - val_true_negative: 25.4386 - val_false_positive: 9.6491 - val_false_negative: 15.8772
+Epoch 38/60
+32270/32270 - 334s - loss: 0.5917 - binary_accuracy: 0.6802 - precision: 0.6571 - recall: 0.5826 - f1_score: 0.6125 - true_positive: 16.3762 - true_negative: 27.0891 - false_positive: 8.5545 - false_negative: 11.8812 - val_loss: 0.6903 - val
+_binary_accuracy: 0.6171 - val_precision: 0.5755 - val_recall: 0.5598 - val_f1_score: 0.5640 - val_true_positive: 15.4211 - val_true_negative: 23.4035 - val_false_positive: 11.6842 - val_false_negative: 12.4035
+Epoch 39/60
+32270/32270 - 334s - loss: 0.5019 - binary_accuracy: 0.7506 - precision: 0.7252 - recall: 0.7057 - f1_score: 0.7104 - true_positive: 19.8158 - true_negative: 28.1465 - false_positive: 7.4970 - false_negative: 8.4416 - val_loss: 0.7524 - val_
+binary_accuracy: 0.6244 - val_precision: 0.5687 - val_recall: 0.5498 - val_f1_score: 0.5532 - val_true_positive: 15.4561 - val_true_negative: 23.8246 - val_false_positive: 11.2632 - val_false_negative: 12.3684
+Epoch 40/60
+32270/32270 - 335s - loss: 0.4454 - binary_accuracy: 0.7859 - precision: 0.7509 - recall: 0.7746 - f1_score: 0.7586 - true_positive: 21.8059 - true_negative: 28.4158 - false_positive: 7.2277 - false_negative: 6.4515 - val_loss: 0.7543 - val_
+binary_accuracy: 0.6171 - val_precision: 0.5633 - val_recall: 0.6041 - val_f1_score: 0.5772 - val_true_positive: 16.5439 - val_true_negative: 22.3333 - val_false_positive: 12.7544 - val_false_negative: 11.2807
+Epoch 41/60
+32270/32270 - 335s - loss: 0.4319 - binary_accuracy: 0.7933 - precision: 0.7643 - recall: 0.7731 - f1_score: 0.7647 - true_positive: 21.7505 - true_negative: 28.9465 - false_positive: 6.6970 - false_negative: 6.5069 - val_loss: 0.8218 - val_
+binary_accuracy: 0.6154 - val_precision: 0.5627 - val_recall: 0.6165 - val_f1_score: 0.5822 - val_true_positive: 17.0351 - val_true_negative: 21.7193 - val_false_positive: 13.3684 - val_false_negative: 10.7895
+Epoch 42/60
+32270/32270 - 335s - loss: 0.4026 - binary_accuracy: 0.8144 - precision: 0.7790 - recall: 0.8143 - f1_score: 0.7922 - true_positive: 22.9069 - true_negative: 29.1485 - false_positive: 6.4950 - false_negative: 5.3505 - val_loss: 0.9909 - val_
+binary_accuracy: 0.6327 - val_precision: 0.5699 - val_recall: 0.6122 - val_f1_score: 0.5861 - val_true_positive: 17.3333 - val_true_negative: 22.5263 - val_false_positive: 12.5614 - val_false_negative: 10.4912
