@@ -1,0 +1,23 @@
+{'batch_size': 16, 'input_dim_d': 23532, 'input_dim_p': 16693, 'train_epoch': 13, 'max_drug_seq': 50, 'max_protein_seq': 545, 'embed_size': 384, 'dropout_rate': 0.1, 'scale_down_ratio': 0.25, 'growth_rate': 20, 'transition_rate': 0.5, 'num_dense_blocks': 4, 'kernel_dense_size': 3, 'inter_size': 1536, 'num_heads': 12, 'attention_dropout_rate': 0.1, 'output_dropout_rate': 0.1, 'flat_dim': 78192}
+None
+---FINAL RESULTS-----
+Validation Performance 
+Loss: 0.6964903712538588
+accuracy: 0.60094815
+precision: 0.44037086
+recall: 0.21472469
+F1: 0.27812254
+TP: 6.761062
+TN: 12.318584
+FP: 5.380531
+FN: 7.2743363
+Train Performance 
+Loss: 0.5972661009099338
+accuracy: 0.67331886
+precision: 0.4419746
+recall: 0.24267013
+F1: 0.31141812
+TP: 7.764123
+TN: 13.778989
+FP: 4.060456
+FN: 6.3785925
