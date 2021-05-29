@@ -9,8 +9,7 @@ from models import *
 torch.manual_seed(1)
 np.random.seed(1)
 
-log_dir = os.path.join('log', time.asctime(time.localtime(
-    time.time()))).replace(" ", "_").replace(":", "_")
+log_dir = os.path.join('log', time.asctime(time.localtime(time.time()))).replace(" ", "_").replace(":", "_")
 
 
 def model_initialize(**config):
@@ -95,7 +94,6 @@ class MPNN_CNN:
         # data loader for train val and test(if val and test existes)
         params = {'batch_size': BATCH_SIZE, 'shuffle': True,
                   'num_workers': self.config['num_workers'], 'drop_last': False}
-        params['collate_fn'] = mpnn_collate_func
         trainset_generator = data.DataLoader(data_process_loader(
             train.index.values, train.Label.values, train, **self.config), **params)
         if val is not None:
@@ -107,9 +105,7 @@ class MPNN_CNN:
             params_test = {'batch_size': BATCH_SIZE, 'shuffle': False,
                            'num_workers': self.config['num_workers'], 'drop_last': False,
                            'sampler': SequentialSampler(info)}
-            params_test['collate_fn'] = params['collate_fn']
-            testing_generator = data.DataLoader(data_process_loader(
-                test.index.values, test.Label.values, test, **self.config), **params_test)
+            testing_generator = data.DataLoader(data_process_loader(test.index.values, test.Label.values, test, **self.config), **params_test)
 
         # recode the metrics when training
         acc_record, f1_record, precision_record, recall_record, loss_record = [], [], [], [], []
@@ -141,28 +137,18 @@ class MPNN_CNN:
             t_prev = t_now
 
             with torch.set_grad_enabled(False):
-                _,accuracy, precision, recall, f1 = self.test_(
-                    trainset_generator, self.model)
-                print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)[:7] + ', Precision: ' + str(
-                    precision)[:7]
-                      + ', Recall: ' + str(recall)[:7] + ' , F1: ' + str(f1)[:7], file=open(log_dir + 'log.txt', 'a+'),
-                      flush=True)
-                print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)[:7] + ', Precision: ' + str(
-                    precision)[:7]
-                      + ', Recall: ' + str(recall)[:7] + ' , F1: ' + str(f1)[:7], flush=True)
+                _,accuracy, precision, recall, f1 = self.test_(trainset_generator, self.model)
+                print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy) + ', Precision: ' + str(
+                    precision)+ ', Recall: ' + str(recall) + ' , F1: ' + str(f1), file=open(log_dir + 'log.txt', 'a+'),flush=True)
+                print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(
+                    precision)+ ', Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
             if val is not None:
                 with torch.set_grad_enabled(False):
-                    _,accuracy, precision, recall, f1 = self.test_(
-                        validset_generator, self.model)
-                    print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)[
-                                                                                   :7] + ', Precision: ' + str(
-                        precision)[:7]
-                          + ', Recall: ' + str(recall)[:7] + ' , F1: ' + str(f1)[:7],
-                          file=open(log_dir + 'log.txt', 'a+'), flush=True)
-                    print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)[
-                                                                                   :7] + ', Precision: ' + str(
-                        precision)[:7]
-                          + ', Recall: ' + str(recall)[:7] + ' , F1: ' + str(f1)[:7], flush=True)
+                    _,accuracy, precision, recall, f1 = self.test_(validset_generator, self.model)
+                    print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(precision)
+                          + ', Recall: ' + str(recall) + ' , F1: ' + str(f1),file=open(log_dir + 'log.txt', 'a+'), flush=True)
+                    print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(
+                        precision)+ ', Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
                     acc_record.append(accuracy)
                     f1_record.append(f1)
                     precision_record.append(precision)
@@ -181,19 +167,14 @@ class MPNN_CNN:
 
         pred_res = []
         if test is not None:
-            pred_res, accuracy, precision, recall, f1 = self.test_(
-                testing_generator, self.model)
+            pred_res, accuracy, precision, recall, f1 = self.test_(testing_generator, self.model)
             print(
-                'Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy)[:7] + ', Precision:' + str(precision)[
-                                                                                                         :7]
-                + ' , Recall: ' + str(recall)[:7] + ' , F1: ' + str(f1)[:7],
-                file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
+                'Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy)+ ', Precision:' + str(precision)
+                + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1),file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
             print(
-                'Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy)[:7] + ', Precision:' + str(precision)[
-                                                                                                         :7]
-                + ' , Recall: ' + str(recall)[:7] + ' , F1: ' + str(f1)[:7], flush=True)
+                'Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(precision)
+                + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
         pred_res.to_csv(os.path.join(log_dir, 'predicted_labels.csv'))
-
         self.save_model(log_dir)
 
     def save_model(self, path_dir):
