@@ -147,7 +147,6 @@ def smiles2mpnnfeature(smiles):
     Natom, Nbond = fatoms.shape[0], fbonds.shape[0]
     atoms_completion_num = MAX_ATOM - fatoms.shape[0]
     bonds_completion_num = MAX_BOND - fbonds.shape[0]
-    assert atoms_completion_num >= 0 and bonds_completion_num >= 0
     fatoms_dim = fatoms.shape[1]
     fbonds_dim = fbonds.shape[1]
     fatoms = torch.cat([fatoms, torch.zeros(
@@ -159,19 +158,7 @@ def smiles2mpnnfeature(smiles):
     bgraph = torch.cat(
         [bgraph.float(), torch.zeros(bonds_completion_num, MAX_NB)], 0)
     shape_tensor = torch.Tensor([Natom, Nbond]).view(1, -1)
-    if np.inf in torch.flatten(fatoms).numpy() or np.nan in torch.flatten(fatoms).numpy():
-        print("error")
-    if np.inf in torch.flatten(fbonds).numpy() or np.nan in torch.flatten(fbonds).numpy():
-        print("error")
-    if np.inf in torch.flatten(agraph).numpy() or np.nan in torch.flatten(agraph).numpy():
-        print("error")
-    if np.inf in torch.flatten(bgraph).numpy() or np.nan in torch.flatten(bgraph).numpy():
-        print("error")
-    if np.inf in torch.flatten(shape_tensor).numpy() or np.nan in torch.flatten(shape_tensor).numpy():
-        print("error")
     return [fatoms.float(), fbonds.float(), agraph.float(), bgraph.float(), shape_tensor.float()]
-
-# random_fold
 
 
 def create_fold(df, fold_seed, frac):
