@@ -49,28 +49,24 @@ def read_file_training_dataset_drug_target_pairs(path):
 
 def get_mol(smiles):
     mol = Chem.MolFromSmiles(smiles)
-    if mol is None:
-        return None
-    Chem.Kekulize(mol)
+    if not(mol is None):
+      Chem.Kekulize(mol)
     return mol
 
 
-def onek_encoding_unk(x, allowable_set):
+def onehot_encoding(x, allowable_set):
     if x not in allowable_set:
         x = allowable_set[-1]
     return list(map(lambda s: x == s, allowable_set))
 
 
 def atom_features(atom):
-    return torch.Tensor(onek_encoding_unk(atom.GetSymbol(), ELEM_LIST)
-                        + onek_encoding_unk(atom.GetDegree(),
-                                            [0, 1, 2, 3, 4, 5, 6, 7])
-                        + onek_encoding_unk(atom.GetFormalCharge(),
-                                            [-1, -2, 1, 2, 0])
-                        + onek_encoding_unk(int(atom.GetChiralTag()), [0, 1, 2, 3])
-                        + onek_encoding_unk(atom.GetTotalNumHs(),
-                                            [0, 1, 2, 3, 4])
-                        + onek_encoding_unk(atom.GetImplicitValence(), [0, 1, 2, 3])
+    return torch.Tensor(onehot_encoding(atom.GetSymbol(), ELEM_LIST)
+                        + onehot_encoding(atom.GetDegree(),[0, 1, 2, 3, 4, 5, 6, 7])
+                        + onehot_encoding(atom.GetFormalCharge(),[-1, -2, 1, 2, 0])
+                        + onehot_encoding(int(atom.GetChiralTag()), [0, 1, 2, 3])
+                        + onehot_encoding(atom.GetTotalNumHs(),[0, 1, 2, 3, 4])
+                        + onehot_encoding(atom.GetImplicitValence(), [0, 1, 2, 3])
                         + [atom.GetIsAromatic()] + [atom.GetHybridization()] + [atom.IsInRing()])
 
 
@@ -79,7 +75,7 @@ def bond_features(bond):
     stereo = int(bond.GetStereo())
     fbond = [bt == Chem.rdchem.BondType.SINGLE, bt == Chem.rdchem.BondType.DOUBLE, bt ==
              Chem.rdchem.BondType.TRIPLE, bt == Chem.rdchem.BondType.AROMATIC, bond.IsInRing()]
-    fstereo = onek_encoding_unk(stereo, [0, 1, 2, 3, 4, 5])
+    fstereo = onehot_encoding(stereo, [0, 1, 2, 3, 4, 5])
     return torch.Tensor(fbond + fstereo)
 
 
@@ -110,7 +106,6 @@ def smiles2mpnnfeature(smiles):
         fatoms, fbonds = [], [padding]
         in_bonds, all_bonds = [], [(-1, -1)]
         mol = get_mol(smiles)
-        assert not (mol is None)
         n_atoms = mol.GetNumAtoms()
         for atom in mol.GetAtoms():
             fatoms.append(atom_features(atom))
@@ -254,14 +249,12 @@ def generate_config(drug_encoding=None, target_encoding=None,
                    'num_workers': num_workers,
                    'cuda_id': cuda_id
                    }
-    if drug_encoding == 'MPNN':
-        base_config['hidden_dim_drug'] = hidden_dim_drug
-        base_config['batch_size'] = batch_size
-        base_config['mpnn_hidden_size'] = mpnn_hidden_size
-        base_config['mpnn_depth'] = mpnn_depth
-    if target_encoding == 'CNN':
-        base_config['cnn_target_filters'] = cnn_target_filters
-        base_config['cnn_target_kernels'] = cnn_target_kernels
+    base_config['hidden_dim_drug'] = hidden_dim_drug
+    base_config['batch_size'] = batch_size
+    base_config['mpnn_hidden_size'] = mpnn_hidden_size
+    base_config['mpnn_depth'] = mpnn_depth
+    base_config['cnn_target_filters'] = cnn_target_filters
+    base_config['cnn_target_kernels'] = cnn_target_kernels
     return base_config
 
 
