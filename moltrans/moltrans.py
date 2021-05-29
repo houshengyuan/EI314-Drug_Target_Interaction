@@ -97,7 +97,7 @@ def main():
     optim = keras.optimizers.Adam(args.lr)
 
     print("Encoding training data...")
-    train_drug, train_protein, train_label = load_data(os.path.join('train', 'train.csv'), type='train')
+    train_drug, train_protein, train_label = load_data(os.path.join('../train', 'train.csv'), type='train')
     train_drug_v, train_protein_v, train_drug_mask, train_protein_mask = encode_data(train_drug, train_protein,
                                                                                      type='train')
     print("Finish Encoding training data.")
@@ -106,7 +106,7 @@ def main():
     #exit(1)
 
     print("Encoding validation data...")
-    val_drug, val_protein, val_label = load_data(os.path.join('validation', 'validation.csv'), type='val')
+    val_drug, val_protein, val_label = load_data(os.path.join('../validation', 'validation.csv'), type='val')
     val_drug_v, val_protein_v, val_drug_mask, val_protein_mask = encode_data(val_drug, val_protein, type='val')
     print("Finish Encoding validation data.")
 
