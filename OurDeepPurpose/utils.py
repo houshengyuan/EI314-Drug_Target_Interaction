@@ -7,10 +7,11 @@ import os
 from sklearn.preprocessing import OneHotEncoder
 from torch.autograd import Variable
 import pickle
+from torch.utils.data.dataloader import default_collate
 
 MAX_ATOM = 800
 MAX_BOND = MAX_ATOM * 2
-RATIO = int(100000/15000)
+RATIO = int(100000 / 15000)
 ELEM_LIST = ['C', 'N', 'O', 'S', 'P', 'F', 'Cl', 'Br', 'B', 'H', 'Ca', 'Zr', 'Si', 'Dy', 'Pb', 'V', 'Ti', 'Sr',
              'Bi', 'Pd', 'Al', 'Yb', 'Mn', 'Tl', 'As', 'Mo', 'Fe',
              'Sn', 'Ru', 'K', 'Pt', 'Li', 'Ag', 'Au', 'Sb', 'Cd', 'Mg',
@@ -30,6 +31,7 @@ enc_protein = OneHotEncoder().fit(np.array(amino_char).reshape(-1, 1))
 enc_drug = OneHotEncoder().fit(np.array(smiles_char).reshape(-1, 1))
 MAX_SEQ_PROTEIN = 1000
 MAX_SEQ_DRUG = 100
+
 
 def read_file_training_dataset_drug_target_pairs(path):
     file = open(path, "r")
@@ -69,7 +71,7 @@ def atom_features(atom):
                         + onek_encoding_unk(atom.GetTotalNumHs(),
                                             [0, 1, 2, 3, 4])
                         + onek_encoding_unk(atom.GetImplicitValence(), [0, 1, 2, 3])
-                        + [atom.GetIsAromatic()]+[atom.GetHybridization()]+[atom.IsInRing()])
+                        + [atom.GetIsAromatic()] + [atom.GetHybridization()] + [atom.IsInRing()])
 
 
 def bond_features(bond):
@@ -149,14 +151,10 @@ def smiles2mpnnfeature(smiles):
     bonds_completion_num = MAX_BOND - fbonds.shape[0]
     fatoms_dim = fatoms.shape[1]
     fbonds_dim = fbonds.shape[1]
-    fatoms = torch.cat([fatoms, torch.zeros(
-        atoms_completion_num, fatoms_dim)], 0)
-    fbonds = torch.cat([fbonds, torch.zeros(
-        bonds_completion_num, fbonds_dim)], 0)
-    agraph = torch.cat(
-        [agraph.float(), torch.zeros(atoms_completion_num, MAX_NB)], 0)
-    bgraph = torch.cat(
-        [bgraph.float(), torch.zeros(bonds_completion_num, MAX_NB)], 0)
+    fatoms = torch.cat([fatoms, torch.zeros(atoms_completion_num, fatoms_dim)], 0)
+    fbonds = torch.cat([fbonds, torch.zeros(bonds_completion_num, fbonds_dim)], 0)
+    agraph = torch.cat([agraph.float(), torch.zeros(atoms_completion_num, MAX_NB)], 0)
+    bgraph = torch.cat([bgraph.float(), torch.zeros(bonds_completion_num, MAX_NB)], 0)
     shape_tensor = torch.Tensor([Natom, Nbond]).view(1, -1)
     return [fatoms.float(), fbonds.float(), agraph.float(), bgraph.float(), shape_tensor.float()]
 
@@ -165,8 +163,7 @@ def create_fold(df, fold_seed, frac):
     train_frac, val_frac, test_frac = frac
     test = df.sample(frac=test_frac, replace=False, random_state=fold_seed)
     train_val = df[~df.index.isin(test.index)]
-    val = train_val.sample(frac=val_frac/(1-test_frac),
-                           replace=False, random_state=1)
+    val = train_val.sample(frac=val_frac / (1 - test_frac),replace=False, random_state=1)
     train = train_val[~train_val.index.isin(val.index)]
     train.reset_index(drop=True, inplace=True)
     x = len(train)
@@ -196,7 +193,7 @@ def encode_protein(df_data, target_encoding, column_name='FASTA', save_column_na
     return df_data
 
 
-def data_process(X_drug=None, X_target=None, y=None, drug_encoding="MPNN", target_encoding="CNN", frac=[0.8, 0.1, 0.1], random_seed=1):
+def data_process(X_drug=None, X_target=None, y=None, drug_encoding="MPNN", target_encoding="CNN", frac=[0.8, 0.1, 0.1],random_seed=1):
     if isinstance(X_target, str):
         X_target = [X_target]
     df_data = pd.DataFrame(zip(X_drug, X_target, y))
@@ -207,7 +204,7 @@ def data_process(X_drug=None, X_target=None, y=None, drug_encoding="MPNN", targe
     return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
 
 
-class data_process_loader(data.Dataset):
+class data_loader(data.Dataset):
     def __init__(self, list_IDs, labels, df, **config):
         self.labels = labels
         self.list_IDs = list_IDs
@@ -227,13 +224,11 @@ class data_process_loader(data.Dataset):
 
 
 def generate_config(drug_encoding=None, target_encoding=None,
-                    result_folder="./result/",
                     input_dim_drug=1024,
                     input_dim_protein=8420,
                     hidden_dim_drug=256,
                     hidden_dim_protein=256,
                     cls_hidden_dims=[1024, 1024, 512],
-                    mlp_hidden_dims_target=[1024, 256, 64],
                     batch_size=256,
                     train_epoch=10,
                     test_every_X_epoch=20,
@@ -245,7 +240,6 @@ def generate_config(drug_encoding=None, target_encoding=None,
                     num_workers=0,
                     cuda_id=None
                     ):
-
     base_config = {'input_dim_drug': input_dim_drug,
                    'input_dim_protein': input_dim_protein,
                    'hidden_dim_drug': hidden_dim_drug,  # hidden dim of drug
@@ -257,21 +251,15 @@ def generate_config(drug_encoding=None, target_encoding=None,
                    'LR': LR,
                    'drug_encoding': drug_encoding,
                    'target_encoding': target_encoding,
-                   'result_folder': result_folder,
                    'num_workers': num_workers,
                    'cuda_id': cuda_id
                    }
-    if not os.path.exists(base_config['result_folder']):
-        os.makedirs(base_config['result_folder'])
     if drug_encoding == 'MPNN':
         base_config['hidden_dim_drug'] = hidden_dim_drug
         base_config['batch_size'] = batch_size
         base_config['mpnn_hidden_size'] = mpnn_hidden_size
         base_config['mpnn_depth'] = mpnn_depth
-    if target_encoding == 'AAC':
-        # MLP classifier dim 1
-        base_config['mlp_hidden_dims_target'] = mlp_hidden_dims_target
-    elif target_encoding == 'CNN':
+    if target_encoding == 'CNN':
         base_config['cnn_target_filters'] = cnn_target_filters
         base_config['cnn_target_kernels'] = cnn_target_kernels
     return base_config
@@ -281,7 +269,7 @@ def trans_protein(x):
     temp = list(x.upper())
     temp = [i if i in amino_char else '?' for i in temp]
     if len(temp) < MAX_SEQ_PROTEIN:
-        temp = temp + ['?'] * (MAX_SEQ_PROTEIN-len(temp))
+        temp = temp + ['?'] * (MAX_SEQ_PROTEIN - len(temp))
     else:
         temp = temp[:MAX_SEQ_PROTEIN]
     return temp
@@ -295,7 +283,7 @@ def trans_drug(x):
     temp = list(x)
     temp = [i if i in smiles_char else '?' for i in temp]
     if len(temp) < MAX_SEQ_DRUG:
-        temp = temp + ['?'] * (MAX_SEQ_DRUG-len(temp))
+        temp = temp + ['?'] * (MAX_SEQ_DRUG - len(temp))
     else:
         temp = temp[:MAX_SEQ_DRUG]
     return temp
@@ -316,8 +304,6 @@ def obtain_protein_embedding(net, file, target_encoding):
     x = np.stack(v_d)
     return net.model_protein(torch.FloatTensor(x))
 
-# utils.smiles2mpnnfeature -> utils.mpnn_collate_func -> utils.mpnn_feature_collate_func -> encoders.MPNN.forward
-
 
 def mpnn_feature_collate_func(x):
     N_atoms_scope = torch.cat([i[4] for i in x], 0)
@@ -336,9 +322,6 @@ def mpnn_feature_collate_func(x):
 def mpnn_collate_func(x):
     mpnn_feature = [i[0] for i in x]
     mpnn_feature = mpnn_feature_collate_func(mpnn_feature)
-    from torch.utils.data.dataloader import default_collate
     x_remain = [list(i[1:]) for i in x]
     x_remain_collated = default_collate(x_remain)
     return [mpnn_feature] + x_remain_collated
-
-

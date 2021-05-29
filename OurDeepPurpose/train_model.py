@@ -89,15 +89,15 @@ class MPNN_CNN:
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(opt, milestones=miles, gamma=0.8)
         # data loader for train val and test(if val and test existes)
         params = {'batch_size': self.batch_size, 'shuffle': True,'num_workers': self.config['num_workers'], 'drop_last': False}
-        trainset_generator = data.DataLoader(data_process_loader(
+        trainset_generator = data.DataLoader(data_loader(
             train.index.values, train.Label.values, train, **self.config), **params)
-        validset_generator = data.DataLoader(data_process_loader(
+        validset_generator = data.DataLoader(data_loader(
                 val.index.values, val.Label.values, val, **self.config), **params)
-        info = data_process_loader(test.index.values, test.Label.values, test, **self.config)
+        info = data_loader(test.index.values, test.Label.values, test, **self.config)
         params_test = {'batch_size': self.batch_size, 'shuffle': False,
                            'num_workers': self.config['num_workers'], 'drop_last': False,
                            'sampler': SequentialSampler(info)}
-        testing_generator = data.DataLoader(data_process_loader(test.index.values, test.Label.values, test, **self.config), **params_test)
+        testing_generator = data.DataLoader(data_loader(test.index.values, test.Label.values, test, **self.config), **params_test)
         # recode the metrics when training
         acc_record, f1_record, precision_record, recall_record, loss_record = [], [], [], [], []
         start = time.time()
