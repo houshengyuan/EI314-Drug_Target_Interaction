@@ -4,6 +4,7 @@ from sklearn.metrics import mean_squared_error, roc_auc_score, average_precision
     accuracy_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 from models import *
+import os
 
 # seed setting
 torch.manual_seed(1)

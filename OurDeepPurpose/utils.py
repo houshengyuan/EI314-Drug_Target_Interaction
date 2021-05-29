@@ -6,6 +6,8 @@ from torch.utils import data
 from sklearn.preprocessing import OneHotEncoder
 from torch.autograd import Variable
 from torch.utils.data.dataloader import default_collate
+import os
+import pickle
 
 MAX_ATOM = 800
 MAX_BOND = MAX_ATOM * 2
@@ -269,6 +271,9 @@ def trans_protein(x):
 def protein_2_embed(x):
     return enc_protein.transform(np.array(x).reshape(-1, 1)).toarray().T
 
+def save_dict(path, obj):
+    with open(os.path.join(path, 'config.pkl'), 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 def mpnn_feature_collate_func(x):
     N_atoms_scope = torch.cat([i[4] for i in x], 0)
