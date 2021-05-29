@@ -272,31 +272,6 @@ def protein_2_embed(x):
     return enc_protein.transform(np.array(x).reshape(-1, 1)).toarray().T
 
 
-def trans_drug(x):
-    temp = list(x)
-    temp = [i if i in smiles_char else '?' for i in temp]
-    if len(temp) < MAX_SEQ_DRUG:
-        temp = temp + ['?'] * (MAX_SEQ_DRUG - len(temp))
-    else:
-        temp = temp[:MAX_SEQ_DRUG]
-    return temp
-
-
-def drug_2_embed(x):
-    print(np.array(x).reshape(-1, 1))
-    return enc_drug.transform(np.array(x).reshape(-1, 1)).toarray().T
-
-
-def save_dict(path, obj):
-    with open(os.path.join(path, 'config.pkl'), 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
-
-def obtain_protein_embedding(net, file, target_encoding):
-    v_d = [protein_2_embed(i) for i in file['FASTA'].values]
-    x = np.stack(v_d)
-    return net.model_protein(torch.FloatTensor(x))
-
 
 def mpnn_feature_collate_func(x):
     N_atoms_scope = torch.cat([i[4] for i in x], 0)
