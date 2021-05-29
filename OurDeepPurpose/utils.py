@@ -3,10 +3,8 @@ import pandas as pd
 from rdkit import Chem, DataStructs
 import torch
 from torch.utils import data
-import os
 from sklearn.preprocessing import OneHotEncoder
 from torch.autograd import Variable
-import pickle
 from torch.utils.data.dataloader import default_collate
 
 MAX_ATOM = 800
@@ -270,7 +268,6 @@ def trans_protein(x):
 
 def protein_2_embed(x):
     return enc_protein.transform(np.array(x).reshape(-1, 1)).toarray().T
-
 
 
 def mpnn_feature_collate_func(x):

@@ -15,13 +15,10 @@ class Classifier(nn.Sequential):   # self-defined
         self.dropout = nn.Dropout(0.25)
         self.hidden_dims = config['cls_hidden_dims']
         layer_size = len(self.hidden_dims) + 1
-        dims = [self.input_dim_drug + self.input_dim_protein] + \
-            self.hidden_dims + [2]
+        dims = [self.input_dim_drug + self.input_dim_protein] + self.hidden_dims + [2]
         dims[0] = self.input_dim_drug+100
-        self.predictor = nn.ModuleList(
-            [nn.Linear(dims[i], dims[i+1]) for i in range(layer_size)])
-        self.bn = nn.ModuleList([nn.BatchNorm1d(dims[i + 1])
-                                for i in range(layer_size)])
+        self.predictor = nn.ModuleList([nn.Linear(dims[i], dims[i+1]) for i in range(layer_size)])
+        self.bn = nn.ModuleList([nn.BatchNorm1d(dims[i + 1])for i in range(layer_size)])
         self._initialize()
 
         # attention to protein using drug embeddings
@@ -39,7 +36,6 @@ class Classifier(nn.Sequential):   # self-defined
         v_D = self.model_drug(v_D)
         v_P, p_raw = self.model_protein(v_P)
         p_raw = F.adaptive_max_pool1d(p_raw, output_size=100)
-
         # attention mechinism
         filter_size = p_raw.shape[-2]
         p_raw = torch.reshape(p_raw, (-1, 100))
@@ -48,12 +44,9 @@ class Classifier(nn.Sequential):   # self-defined
         query_drug = torch.unsqueeze(query_drug, 1)
         attention_p = torch.relu(self.W_attention(p_raw))
         attention_p = torch.reshape(attention_p, (-1, filter_size, 100))
-
-        weights = torch.tanh(torch.einsum(
-            'ijk,ilk->ilj', query_drug, attention_p))
+        weights = torch.tanh(torch.einsum('ijk,ilk->ilj', query_drug, attention_p))
         ys = weights * attention_p
         v_P_attention = torch.mean(ys, 1)
-
         # end of attention
         v_f = torch.cat((v_D, v_P_attention), 1)
         fault_idx = torch.logical_or(torch.any(torch.isnan(v_f), dim=1), torch.any(
@@ -77,7 +70,6 @@ class CNN(nn.Sequential):
                                               kernel_size=kernels[i]) for i in range(layer_size)])
         self.convs = self.convs.float()
         protein_size = self.simulate_output((26, 1000))
-
         self.fc = nn.Linear(protein_size, config['hidden_dim_protein'])
 
     def simulate_output(self, shape):
@@ -105,8 +97,7 @@ class MPNN(nn.Sequential):
         super(MPNN, self).__init__()
         self.hid_size = hid_size
         self.depth = depth
-        self.input_layer = nn.Linear(
-            ATOM_FDIM + BOND_FDIM, self.hid_size, bias=False)
+        self.input_layer = nn.Linear(ATOM_FDIM + BOND_FDIM, self.hid_size, bias=False)
         self.output_layer = nn.Linear(ATOM_FDIM+self.hid_size, self.hid_size)
         self.graph_layer = nn.Linear(self.hid_size, self.hid_size, bias=False)
 
@@ -121,12 +112,10 @@ class MPNN(nn.Sequential):
         for one_record in range(N_ab.shape[0]):
             a_num = int(N_ab[one_record][0].item())
             b_num = int(N_ab[one_record][1].item())
-
             f_atom.append(feature_atom[one_record, :a_num, :])
             f_bond.append(feature_bond[one_record, :b_num, :])
             g_atom.append(graph_atom[one_record, :a_num, :]+N_atom)
             g_bond.append(graph_bond[one_record, :b_num, :]+N_bond)
-
             atom_dict.append((N_atom, a_num))
             N_atom += a_num
             N_bond += b_num
@@ -134,7 +123,6 @@ class MPNN(nn.Sequential):
         f_bond = create_var(torch.cat(f_bond, 0)).to(device)
         g_atom = create_var(torch.cat(g_atom, 0).long()).to(device)
         g_bond = create_var(torch.cat(g_bond, 0).long()).to(device)
-
         emb_input = self.input_layer(f_bond)
         mes = F.relu(emb_input)
         # build gnn
