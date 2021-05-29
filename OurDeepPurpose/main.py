@@ -1,13 +1,11 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-import warnings
 import train_model
 from utils import *
 
 
 
 def main():
-    warnings.filterwarnings("ignore")
     X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train.csv')
     train, val, test = data_process(X_drugs, X_targets, y,drug_encoding='MPNN', target_encoding='CNN',frac=[0.8,0.1,0.1],random_seed = 2)
     config = generate_config(drug_encoding = 'MPNN',target_encoding = 'CNN',
