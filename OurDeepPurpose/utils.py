@@ -49,8 +49,8 @@ def read_file_training_dataset_drug_target_pairs(path):
 
 def get_mol(smiles):
     mol = Chem.MolFromSmiles(smiles)
-    if not(mol is None):
-      Chem.Kekulize(mol)
+    if not (mol is None):
+        Chem.Kekulize(mol)
     return mol
 
 
@@ -62,10 +62,10 @@ def onehot_encoding(x, allowable_set):
 
 def atom_features(atom):
     return torch.Tensor(onehot_encoding(atom.GetSymbol(), ELEM_LIST)
-                        + onehot_encoding(atom.GetDegree(),[0, 1, 2, 3, 4, 5, 6, 7])
-                        + onehot_encoding(atom.GetFormalCharge(),[-1, -2, 1, 2, 0])
+                        + onehot_encoding(atom.GetDegree(), [0, 1, 2, 3, 4, 5, 6, 7])
+                        + onehot_encoding(atom.GetFormalCharge(), [-1, -2, 1, 2, 0])
                         + onehot_encoding(int(atom.GetChiralTag()), [0, 1, 2, 3])
-                        + onehot_encoding(atom.GetTotalNumHs(),[0, 1, 2, 3, 4])
+                        + onehot_encoding(atom.GetTotalNumHs(), [0, 1, 2, 3, 4])
                         + onehot_encoding(atom.GetImplicitValence(), [0, 1, 2, 3])
                         + [atom.GetIsAromatic()] + [atom.GetHybridization()] + [atom.IsInRing()])
 
@@ -158,7 +158,7 @@ def create_fold(df, fold_seed, frac):
     train_frac, val_frac, test_frac = frac
     test = df.sample(frac=test_frac, replace=False, random_state=fold_seed)
     train_val = df[~df.index.isin(test.index)]
-    val = train_val.sample(frac=val_frac / (1 - test_frac),replace=False, random_state=1)
+    val = train_val.sample(frac=val_frac / (1 - test_frac), replace=False, random_state=1)
     train = train_val[~train_val.index.isin(val.index)]
     train.reset_index(drop=True, inplace=True)
     x = len(train)
@@ -188,7 +188,8 @@ def encode_protein(df_data, target_encoding, column_name='FASTA', save_column_na
     return df_data
 
 
-def data_process(X_drug=None, X_target=None, y=None, drug_encoding="MPNN", target_encoding="CNN", frac=[0.8, 0.1, 0.1],random_seed=1):
+def data_process(X_drug=None, X_target=None, y=None, drug_encoding="MPNN", target_encoding="CNN", frac=[0.8, 0.1, 0.1],
+                 random_seed=1):
     if isinstance(X_target, str):
         X_target = [X_target]
     df_data = pd.DataFrame(zip(X_drug, X_target, y))
@@ -226,35 +227,35 @@ def generate_config(drug_encoding=None, target_encoding=None,
                     cls_hidden_dims=[1024, 1024, 512],
                     batch_size=256,
                     train_epoch=10,
-                    test_every_X_epoch=20,
                     LR=1e-4,
                     mpnn_hidden_size=50,
                     mpnn_depth=3,
                     cnn_target_filters=[32, 64, 96],
                     cnn_target_kernels=[4, 8, 12],
                     num_workers=0,
-                    cuda_id=None
+                    preTrain=False,
+                    modelpath="model"
                     ):
-    base_config = {'input_dim_drug': input_dim_drug,
-                   'input_dim_protein': input_dim_protein,
-                   'hidden_dim_drug': hidden_dim_drug,  # hidden dim of drug
-                   'hidden_dim_protein': hidden_dim_protein,  # hidden dim of protein
-                   'cls_hidden_dims': cls_hidden_dims,  # decoder classifier dim 1
-                   'batch_size': batch_size,
-                   'train_epoch': train_epoch,
-                   'test_every_X_epoch': test_every_X_epoch,
-                   'LR': LR,
-                   'drug_encoding': drug_encoding,
-                   'target_encoding': target_encoding,
-                   'num_workers': num_workers,
-                   'cuda_id': cuda_id
-                   }
+    base_config={}
+    base_config['input_dim_drug']=input_dim_drug
+    base_config['input_dim_protein']=input_dim_protein
+    base_config['hidden_dim_drug']=hidden_dim_drug  # hidden dim of drug
+    base_config['hidden_dim_protein']=hidden_dim_protein  # hidden dim of protein
+    base_config['cls_hidden_dims']=cls_hidden_dims  # decoder classifier dim 1
+    base_config['batch_size']=batch_size
+    base_config['train_epoch']=train_epoch
+    base_config['LR']=LR
+    base_config['drug_encoding']=drug_encoding
+    base_config['target_encoding']=target_encoding
+    base_config['num_workers']=num_workers
+    base_config['preTrain']=preTrain
     base_config['hidden_dim_drug'] = hidden_dim_drug
     base_config['batch_size'] = batch_size
     base_config['mpnn_hidden_size'] = mpnn_hidden_size
     base_config['mpnn_depth'] = mpnn_depth
     base_config['cnn_target_filters'] = cnn_target_filters
     base_config['cnn_target_kernels'] = cnn_target_kernels
+    base_config['modelpath'] = modelpath
     return base_config
 
 
@@ -271,9 +272,17 @@ def trans_protein(x):
 def protein_2_embed(x):
     return enc_protein.transform(np.array(x).reshape(-1, 1)).toarray().T
 
+
 def save_dict(path, obj):
     with open(os.path.join(path, 'config.pkl'), 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+
+def load_dict(path):
+    with open(os.path.join(path, 'config.pkl'), 'rb') as f:
+        obj = pickle.load(f)
+        return obj
+
 
 def mpnn_feature_collate_func(x):
     N_atoms_scope = torch.cat([i[4] for i in x], 0)

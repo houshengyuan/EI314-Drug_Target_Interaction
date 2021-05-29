@@ -8,13 +8,8 @@ import os
 # seed setting
 torch.manual_seed(1)
 np.random.seed(1)
-
 log_dir = os.path.join('log', time.asctime(time.localtime(time.time()))).replace(" ", "_").replace(":", "_")
 
-
-def model_initialize(**config):
-    model = MPNN_CNN(**config)
-    return model
 
 
 class MPNN_CNN:
@@ -23,21 +18,19 @@ class MPNN_CNN:
         #  Drug: MPNN  Target:CNN
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
-        self.model_drug = MPNN(config['hidden_dim_drug'], config['mpnn_depth'])
+        if self.config["preTrain"]==True:
+            self.load_model(self.config['modelpath'])
+        else:
+            self.model = Classifier(self.model_drug, self.model_protein, **config)
+        self.model_drug = MPNN(self.config['hidden_dim_drug'], self.config['mpnn_depth'])
         self.model_protein = CNN('protein', **config)
-        self.model = Classifier(self.model_drug, self.model_protein, **config)
-        self.config = config
         self.device = device
         self.drug_encode_method = 'MPNN'
         self.target_encode_method = 'CNN'
-        self.store_url = config['result_folder']
         self.lr=self.config['LR']
         self.batch_size=self.config['batch_size']
         self.train_epoch=self.config['train_epoch']
         self.num_workers=self.config['num_workers']
-
-        if not os.path.exists(self.store_url):
-            os.mkdir(self.store_url)
         if 'num_workers' not in self.config.keys():
             self.config['num_workers'] = 0
 
@@ -155,3 +148,8 @@ class MPNN_CNN:
             os.makedirs(path_dir)
         torch.save(self.model.state_dict(), path_dir + '/model.pt')
         save_dict(path_dir, self.config)
+
+    def load_model(self, path_dir):
+        para=torch.load(path_dir + '/model.pt')
+        self.model.load_state_dict(para)
+        self.config=load_dict(path_dir)
