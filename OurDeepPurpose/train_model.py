@@ -25,13 +25,17 @@ class MPNN_CNN:
             os.makedirs(log_dir)
         self.model_drug = MPNN(config['hidden_dim_drug'], config['mpnn_depth'])
         self.model_protein = CNN('protein', **config)
-
         self.model = Classifier(self.model_drug, self.model_protein, **config)
         self.config = config
         self.device = device
         self.drug_encode_method = 'MPNN'
         self.target_encode_method = 'CNN'
         self.store_url = config['result_folder']
+        self.lr=self.config['LR']
+        self.batch_size=self.config['batch_size']
+        self.train_epoch=self.config['train_epoch']
+        self.num_workers=self.config['num_workers']
+
         if not os.path.exists(self.store_url):
             os.mkdir(self.store_url)
         if 'num_workers' not in self.config.keys():
@@ -55,7 +59,7 @@ class MPNN_CNN:
         plt.savefig(os.path.join(log_dir, 'loss.png'))
         plt.clf()
 
-    def test_(self, data_generator, model):
+    def test(self, data_generator, model):
         predicted_y = []
         true_y = []
         with torch.no_grad():
@@ -70,54 +74,39 @@ class MPNN_CNN:
                 predicted_y += predictions.flatten().tolist()
             pred_res = pd.DataFrame(predicted_y)
         model.train()
-        return pred_res, accuracy_score(true_y, predicted_y), precision_score(true_y, predicted_y), recall_score(true_y,
-                                                                                                                 predicted_y), f1_score(
-            true_y, predicted_y)
+        return pred_res, accuracy_score(true_y, predicted_y), precision_score(true_y, predicted_y), recall_score(true_y,predicted_y), f1_score(true_y, predicted_y)
 
     def train(self, train, val=None, test=None):
-        lr = self.config['LR']
-        BATCH_SIZE = self.config['batch_size']
-        train_epoch = self.config['train_epoch']
         self.model = self.model.to(self.device)
         # split the workload to all cuda evenly
         if torch.cuda.device_count() > 1:
             self.model = nn.DataParallel(self.model, dim=0)
-
         # dynamically change the lr
         # for every 5 epoches  lr:=lr*0.8
-        opt = torch.optim.Adam(self.model.parameters(), lr=lr)
+        opt = torch.optim.Adam(self.model.parameters(), lr=self.lr)
         miles = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
                  65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120]
-        lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
-            opt, milestones=miles, gamma=0.8)
-
+        lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(opt, milestones=miles, gamma=0.8)
         # data loader for train val and test(if val and test existes)
-        params = {'batch_size': BATCH_SIZE, 'shuffle': True,
-                  'num_workers': self.config['num_workers'], 'drop_last': False}
+        params = {'batch_size': self.batch_size, 'shuffle': True,'num_workers': self.config['num_workers'], 'drop_last': False}
         trainset_generator = data.DataLoader(data_process_loader(
             train.index.values, train.Label.values, train, **self.config), **params)
-        if val is not None:
-            validset_generator = data.DataLoader(data_process_loader(
+        validset_generator = data.DataLoader(data_process_loader(
                 val.index.values, val.Label.values, val, **self.config), **params)
-        if test is not None:
-            info = data_process_loader(
-                test.index.values, test.Label.values, test, **self.config)
-            params_test = {'batch_size': BATCH_SIZE, 'shuffle': False,
+        info = data_process_loader(test.index.values, test.Label.values, test, **self.config)
+        params_test = {'batch_size': self.batch_size, 'shuffle': False,
                            'num_workers': self.config['num_workers'], 'drop_last': False,
                            'sampler': SequentialSampler(info)}
-            testing_generator = data.DataLoader(data_process_loader(test.index.values, test.Label.values, test, **self.config), **params_test)
-
+        testing_generator = data.DataLoader(data_process_loader(test.index.values, test.Label.values, test, **self.config), **params_test)
         # recode the metrics when training
         acc_record, f1_record, precision_record, recall_record, loss_record = [], [], [], [], []
-
-        t_prev = time.time()
-        for epo in range(train_epoch):
+        start = time.time()
+        for epo in range(self.train_epoch):
             loss_val = 0
             for i, (d, p, label) in enumerate(trainset_generator):
                 p = p.float().to(self.device)
                 pred = self.model(d, p)
-                label = Variable(torch.from_numpy(
-                    np.array(label)).long()).to(self.device)
+                label = Variable(torch.from_numpy(np.array(label)).long()).to(self.device)
                 loss_fct = torch.nn.CrossEntropyLoss()
                 loss = loss_fct(pred, label)
                 loss_val += loss.item() * label.size(0)
@@ -125,55 +114,40 @@ class MPNN_CNN:
                 loss.backward()
                 opt.step()
                 lr_scheduler.step()
-            t_now = time.time()
+            tmp = time.time()
             # Output the training process
-            print(' Epoch: ' + str(epo + 1) +
-                  '  Loss ' + str(loss_val)[:7] +
-                  ". Consumed Time " + str(int(t_now - t_prev) / 3600)[:7] + " hours",
-                  file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
-            print(' Epoch: ' + str(epo + 1) +
-                  '  Loss ' + str(loss_val)[:7] +
-                  ". Consumed Time " + str(int(t_now - t_prev) / 3600)[:7] + " hours", flush=True)
-            t_prev = t_now
-
+            print(' Epoch: ' + str(epo + 1) +'  Loss ' + str(loss_val) +". Consumed Time " + str(int(tmp - start) / 60) + " mins",file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
+            print(' Epoch: ' + str(epo + 1) +'  Loss ' + str(loss_val) +". Consumed Time " + str(int(tmp - start) / 60) + " mins", flush=True)
+            start = tmp
             with torch.set_grad_enabled(False):
-                _,accuracy, precision, recall, f1 = self.test_(trainset_generator, self.model)
+                _,accuracy, precision, recall, f1 = self.test(trainset_generator, self.model)
                 print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy) + ', Precision: ' + str(
                     precision)+ ', Recall: ' + str(recall) + ' , F1: ' + str(f1), file=open(log_dir + 'log.txt', 'a+'),flush=True)
                 print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(
                     precision)+ ', Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
-            if val is not None:
-                with torch.set_grad_enabled(False):
-                    _,accuracy, precision, recall, f1 = self.test_(validset_generator, self.model)
-                    print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(precision)
+                _,accuracy, precision, recall, f1 = self.test(validset_generator, self.model)
+                print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(precision)
                           + ', Recall: ' + str(recall) + ' , F1: ' + str(f1),file=open(log_dir + 'log.txt', 'a+'), flush=True)
-                    print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(
+                print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy)+ ', Precision: ' + str(
                         precision)+ ', Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
-                    acc_record.append(accuracy)
-                    f1_record.append(f1)
-                    precision_record.append(precision)
-                    recall_record.append(recall)
-                    lloss = 0
-                    for i, (d, p, label) in enumerate(validset_generator):
-                        p = p.float().to(self.device)
-                        pred = self.model(d, p)
-                        label = Variable(torch.from_numpy(
-                            np.array(label)).long()).to(self.device)
-                        loss_fct = torch.nn.CrossEntropyLoss()
-                        loss_ = loss_fct(pred, label)
-                        lloss += loss_.item() * label.size(0)
-                    loss_record.append(lloss)
-        self.plot(train_epoch, acc_record, f1_record, precision, recall_record, loss_record)
-
+                acc_record.append(accuracy)
+                f1_record.append(f1)
+                precision_record.append(precision)
+                recall_record.append(recall)
+                lloss = 0
+                for i, (d, p, label) in enumerate(validset_generator):
+                    p = p.float().to(self.device)
+                    pred = self.model(d, p)
+                    label = Variable(torch.from_numpy(np.array(label)).long()).to(self.device)
+                    loss_fct = torch.nn.CrossEntropyLoss()
+                    loss_ = loss_fct(pred, label)
+                    lloss += loss_.item() * label.size(0)
+                loss_record.append(lloss)
+        self.plot(self.train_epoch, acc_record, f1_record, precision, recall_record, loss_record)
         pred_res = []
-        if test is not None:
-            pred_res, accuracy, precision, recall, f1 = self.test_(testing_generator, self.model)
-            print(
-                'Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy)+ ', Precision:' + str(precision)
-                + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1),file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
-            print(
-                'Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(precision)
-                + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
+        pred_res, accuracy, precision, recall, f1 = self.test(testing_generator, self.model)
+        print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy)+ ', Precision:' + str(precision)+ ' , Recall: ' + str(recall) + ' , F1: ' + str(f1),file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
+        print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(precision)+ ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
         pred_res.to_csv(os.path.join(log_dir, 'predicted_labels.csv'))
         self.save_model(log_dir)
 
