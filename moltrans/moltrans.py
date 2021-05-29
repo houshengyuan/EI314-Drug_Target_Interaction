@@ -97,7 +97,7 @@ def main():
     optim = keras.optimizers.Adam(args.lr)
 
     print("Encoding training data...")
-    train_drug, train_protein, train_label = load_data(os.path.join('../train', 'train.csv'), type='train')
+    train_drug, train_protein, train_label = load_data(os.path.join('../train', 'train_new.csv'), type='train')
     train_drug_v, train_protein_v, train_drug_mask, train_protein_mask = encode_data(train_drug, train_protein,
                                                                                      type='train')
     print("Finish Encoding training data.")
