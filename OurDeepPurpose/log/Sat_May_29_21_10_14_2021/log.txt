@@ -1,3 +1,0 @@
- Epoch: 1  Loss 540.197. Consumed Time 0.00277 hours
- Epoch: 2  Loss 499.325. Consumed Time 0.00888 hours
- Epoch: 3  Loss 469.929. Consumed Time 0.00944 hours
