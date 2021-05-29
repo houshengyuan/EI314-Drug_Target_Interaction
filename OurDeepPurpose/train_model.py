@@ -1,7 +1,6 @@
 from torch.utils.data import SequentialSampler
 import time
-from sklearn.metrics import mean_squared_error, roc_auc_score, average_precision_score, f1_score, log_loss, \
-    accuracy_score, precision_score, recall_score
+from sklearn.metrics import  f1_score, accuracy_score, precision_score, recall_score
 import matplotlib.pyplot as plt
 from models import *
 import os
