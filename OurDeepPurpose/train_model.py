@@ -144,7 +144,6 @@ class MPNN_CNN:
                     lloss += loss_.item() * label.size(0)
                 loss_record.append(lloss)
         self.plot(self.train_epoch, acc_record, f1_record, precision, recall_record, loss_record)
-        pred_res = []
         pred_res, accuracy, precision, recall, f1 = self.test(testing_generator, self.model)
         print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy)+ ', Precision:' + str(precision)+ ' , Recall: ' + str(recall) + ' , F1: ' + str(f1),file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
         print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(precision)+ ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
