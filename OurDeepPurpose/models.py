@@ -1,6 +1,5 @@
 from torch import nn
 import torch.nn.functional as F
-
 from utils import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -107,7 +106,6 @@ class MPNN(nn.Sequential):
         N_atom = 0
         N_bond = 0
         f_atom, f_bond, g_atom, g_bond = [], [], [], []
-
         # add features and graph
         for one_record in range(N_ab.shape[0]):
             a_num = int(N_ab[one_record][0].item())
