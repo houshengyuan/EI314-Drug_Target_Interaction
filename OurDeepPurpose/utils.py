@@ -86,12 +86,6 @@ def create_var(tensor, requires_grad=None):
         return Variable(tensor, requires_grad=requires_grad)
 
 
-def length_func(list_or_tensor):
-    if type(list_or_tensor) == list:
-        return len(list_or_tensor)
-    return list_or_tensor.shape[0]
-
-
 def index_select_ND(source, dim, index):
     index_size = index.size()
     suffix_dim = source.size()[1:]
@@ -180,7 +174,7 @@ def encode_drug(df_data, column_name='SMILES', save_column_name='SMILES'):
     return df_data
 
 
-def encode_protein(df_data, target_encoding, column_name='FASTA', save_column_name='FASTA'):
+def encode_protein(df_data, column_name='FASTA', save_column_name='FASTA'):
     print('Encoding Protein By CNN ing...')
     cnn = pd.Series(df_data[column_name].unique()).apply(trans_protein)
     cnn_dict = dict(zip(df_data[column_name].unique(), cnn))
@@ -188,14 +182,14 @@ def encode_protein(df_data, target_encoding, column_name='FASTA', save_column_na
     return df_data
 
 
-def data_process(X_drug=None, X_target=None, y=None, drug_encoding="MPNN", target_encoding="CNN", frac=[0.8, 0.1, 0.1],
+def data_process(X_drug=None, X_target=None, y=None, frac=[0.8, 0.1, 0.1],
                  random_seed=1):
     if isinstance(X_target, str):
         X_target = [X_target]
     df_data = pd.DataFrame(zip(X_drug, X_target, y))
     df_data.rename(columns={0: 'SMILES', 1: 'FASTA', 2: 'Label'}, inplace=True)
     df_data = encode_drug(df_data)
-    df_data = encode_protein(df_data, target_encoding)
+    df_data = encode_protein(df_data)
     train, val, test = create_fold(df_data, random_seed, frac)
     return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
 
@@ -218,45 +212,6 @@ class data_loader(data.Dataset):
         y = self.labels[index]
         return v_d, v_p, y
 
-
-def generate_config(drug_encoding=None, target_encoding=None,
-                    input_dim_drug=1024,
-                    input_dim_protein=8420,
-                    hidden_dim_drug=256,
-                    hidden_dim_protein=256,
-                    cls_hidden_dims=[1024, 1024, 512],
-                    batch_size=256,
-                    train_epoch=10,
-                    LR=1e-4,
-                    mpnn_hidden_size=50,
-                    mpnn_depth=3,
-                    cnn_target_filters=[32, 64, 96],
-                    cnn_target_kernels=[4, 8, 12],
-                    num_workers=0,
-                    preTrain=False,
-                    modelpath="model"
-                    ):
-    base_config={}
-    base_config['input_dim_drug']=input_dim_drug
-    base_config['input_dim_protein']=input_dim_protein
-    base_config['hidden_dim_drug']=hidden_dim_drug  # hidden dim of drug
-    base_config['hidden_dim_protein']=hidden_dim_protein  # hidden dim of protein
-    base_config['cls_hidden_dims']=cls_hidden_dims  # decoder classifier dim 1
-    base_config['batch_size']=batch_size
-    base_config['train_epoch']=train_epoch
-    base_config['LR']=LR
-    base_config['drug_encoding']=drug_encoding
-    base_config['target_encoding']=target_encoding
-    base_config['num_workers']=num_workers
-    base_config['preTrain']=preTrain
-    base_config['hidden_dim_drug'] = hidden_dim_drug
-    base_config['batch_size'] = batch_size
-    base_config['mpnn_hidden_size'] = mpnn_hidden_size
-    base_config['mpnn_depth'] = mpnn_depth
-    base_config['cnn_target_filters'] = cnn_target_filters
-    base_config['cnn_target_kernels'] = cnn_target_kernels
-    base_config['modelpath'] = modelpath
-    return base_config
 
 
 def trans_protein(x):
