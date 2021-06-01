@@ -126,16 +126,15 @@ def train(model, device, train_set, val_set, test_set, **config):
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(opt, milestones=miles, gamma=0.8)
     # data loader for train val and test(if val and test existes)
     params = {'batch_size': batch_size, 'shuffle': True, 'num_workers': config['num_workers'], 'drop_last': False}
-    trainset_generator = data.DataLoader(data_loader(
-        train_set.index.values, train_set.Label.values, train_set, **config), **params)
-    validset_generator = data.DataLoader(data_loader(
-        val_set.index.values, val_set.Label.values, val_set, **config), **params)
+    trainset_generator = data.DataLoader(data_loader(train_set.index.values, train_set.Label.values, train_set, **config), **params)
+    validset_generator = data.DataLoader(data_loader(val_set.index.values, val_set.Label.values, val_set, **config), **params)
     info = data_loader(test_set.index.values, test_set.Label.values, test_set, **config)
-    params_test = {'batch_size': batch_size, 'shuffle': False,
-                   'num_workers': config['num_workers'], 'drop_last': False,
+    params_test = {'batch_size': batch_size,
+                   'shuffle': False,
+                   'num_workers': config['num_workers'],
+                   'drop_last': False,
                    'sampler': SequentialSampler(info)}
-    testing_generator = data.DataLoader(data_loader(test_set.index.values, test_set.Label.values, test_set, **config),
-                                        **params_test)
+    testing_generator = data.DataLoader(data_loader(test_set.index.values, test_set.Label.values, test_set, **config),**params_test)
     # recode the metrics when training
     train_acc_record, train_f1_record, train_precision_record, train_recall_record, train_loss_record = [], [], [], [], []
     acc_record, f1_record, precision_record, recall_record, loss_record = [], [], [], [], []
@@ -159,8 +158,7 @@ def train(model, device, train_set, val_set, test_set, **config):
         # Output the training process
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(
             int(tmp - start) / 60) + " mins", file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
-        print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(
-            int(tmp - start) / 60) + " mins", flush=True)
+        print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(int(tmp - start) / 60) + " mins", flush=True)
         start = tmp
         # test current model
         with torch.set_grad_enabled(False):
@@ -176,9 +174,7 @@ def train(model, device, train_set, val_set, test_set, **config):
             train_recall_record.append(recall)
             _, accuracy, precision, recall, f1 = test(device, validset_generator, model)
             print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy) + ', Precision: ' + str(
-                precision)
-                  + ', Recall: ' + str(recall) + ' , F1: ' + str(f1), file=open(os.path.join(log_dir, 'log.txt'), 'a+'),
-                  flush=True)
+                precision) + ', Recall: ' + str(recall) + ' , F1: ' + str(f1), file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
             print('Validation at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy) + ', Precision: ' + str(
                 precision) + ', Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
             acc_record.append(accuracy)
