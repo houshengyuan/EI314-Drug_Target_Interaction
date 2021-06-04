@@ -1,6 +1,10 @@
 #!/usr/bin/env python 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # -*-hidden_dim_drug coding:utf-8 -*-
+=======
+# -*- coding:utf-8 -*-
+>>>>>>> 4f1f96cbbd0b8682ea2f7fe0e516cf558a3c3ed4
 =======
 # -*- coding:utf-8 -*-
 >>>>>>> 4f1f96cbbd0b8682ea2f7fe0e516cf558a3c3ed4
