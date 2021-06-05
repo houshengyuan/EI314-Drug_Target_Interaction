@@ -33,6 +33,7 @@ def get_config():
     config['cnn_target_kernels'] = [24, 48, 72]
 
     config['modelpath'] = "model"
+    config['visual_attention']=False
     return config
 
 

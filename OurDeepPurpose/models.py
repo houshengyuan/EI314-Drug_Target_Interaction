@@ -32,7 +32,7 @@ class Classifier(nn.Sequential):  # self-defined
         self.input_dim_drug = config['hidden_dim_drug']
         self.input_dim_protein = config['hidden_dim_protein']
         self.hidden_dims = config['cls_hidden_dims']
-
+        self.visual_attention=config['visual_attention']
         dims = [self.input_dim_drug + self.input_dim_protein] + self.hidden_dims + [2]
         if config['attention']:
           dims[0]+=48
@@ -65,6 +65,7 @@ class Attention(nn.Sequential):
         super(Attention,self).__init__()
         self.layernorm = torch.nn.LayerNorm(normalized_shape=48)
         self.hidden_dim_drug = config['hidden_dim_drug']
+        self.visual_attention=config['visual_attention']
         self.W_attention = nn.Linear(48, 48)
         self.drug_reduce_dim = nn.Linear(self.hidden_dim_drug, 48)
 
@@ -90,6 +91,8 @@ class Attention(nn.Sequential):
         #weights = torch.tanh(torch.einsum('ijk,ilk->ilj', query_drug, attention_p))
         weights = torch.softmax(torch.einsum('ijk,ikl->ijl', query_drug, attention_p)/np.sqrt(48),dim=2)
         weights = torch.unsqueeze(torch.squeeze(weights,1),-1)
+        if self.visual_attention:
+            np.save("attention_weight.npy",torch.squeeze(weights,-1).to('cpu').numpy(),allow_pickle=True)
         #(64,100,1)
         ys = torch.einsum('ijk,ilj->ilk', weights, attention_p)
         #(64,48,1)->
@@ -103,10 +106,11 @@ class CNN(nn.Sequential):
         super(CNN, self).__init__()
         in_channel = [26] + config['cnn_target_filters']
         kernels = config['cnn_target_kernels']
-        layer_size = len(config['cnn_target_filters'])
+        self.layer_size = len(config['cnn_target_filters'])
+        self.visual_attention=config['visual_attention']
         self.convs = nn.ModuleList([nn.Conv1d(in_channels=in_channel[i],
                                               out_channels=in_channel[i + 1],
-                                              kernel_size=kernels[i]) for i in range(layer_size)])
+                                              kernel_size=kernels[i]) for i in range(self.layer_size)])
         self.convs = self.convs.float()
         self.attention = config['attention']
         protein_size = self.simulate_output((26, 1000))
@@ -124,8 +128,10 @@ class CNN(nn.Sequential):
 
 
     def conv_op(self, x):
-        for l in self.convs:
+        for i,l in enumerate(self.convs):
             x = F.relu(l(x))
+            if i == self.layer_size - 1:
+             np.save("conv_out.npy",x.cpu().numpy(),allow_pickle=True)
         return x
 
 
