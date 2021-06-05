@@ -153,7 +153,6 @@ def train(model, device, train_set, val_set, test_set, **config):
     for epo in range(train_epoch):
         loss_val = 0
         for i, (d, p, label) in enumerate(trainset_generator):
-            print(i)
             p = p.float().to(device)
             # print(d.size,p.size)
             pred = model(d, p)
