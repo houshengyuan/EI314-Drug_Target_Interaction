@@ -154,7 +154,6 @@ def train(model, device, train_set, val_set, test_set, **config):
         loss_val = 0
         for i, (d, p, label) in enumerate(trainset_generator):
             p = p.float().to(device)
-            # print(d.size,p.size)
             pred = model(d, p)
             label = Variable(torch.from_numpy(np.array(label)).long()).to(device)
             loss_fct = torch.nn.CrossEntropyLoss()
