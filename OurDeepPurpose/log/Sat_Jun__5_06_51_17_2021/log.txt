@@ -1,0 +1,4 @@
+ Epoch: 1  Loss 117249.41275024414. Consumed Time 1.9 mins
+Training at Epoch 1, Accuracy: 0.52722479667108, Precision: 0.52722479667108, Recall: 1.0 , F1: 0.6904350922277868
+Validation at Epoch 1, Accuracy: 0.13119281891938547, Precision: 0.13119281891938547, Recall: 1.0 , F1: 0.23195482984892418
+ Epoch: 2  Loss 117079.36880111694. Consumed Time 3.7666666666666666 mins
