@@ -227,7 +227,7 @@ def robustness_test():
         for i, (v_d, v_p, label) in enumerate(testset_generator):
             if i % 10 == 0:
                 print("epoch: ", i)
-            v_p = v_p.float().to(device)
+            v_p = v_p.float().to(train_device)
             score = model(v_d, v_p)
             predictions = torch.max(score.data, 1)[1].detach().cpu().numpy()
             label_ids = label.to('cpu').numpy()
