@@ -165,7 +165,7 @@ def train(model, device, train_set, val_set, test_set, **config):
             loss.backward()
             opt.step()
             lr_scheduler.step()
-        train_loss_record.append(loss_val/label.size(0))
+        train_loss_record.append(loss_val/(len(trainset_generator)))
         tmp = time.time()
         # Output the training process
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(
@@ -201,7 +201,7 @@ def train(model, device, train_set, val_set, test_set, **config):
                 loss_fct = torch.nn.CrossEntropyLoss()
                 loss_ = loss_fct(pred, label)
                 lloss += loss_.item() * label.size(0)
-            loss_record.append(lloss/label.size(0))
+            loss_record.append(lloss/len(validset_generator))
     plot(train_epoch, acc_record, f1_record, precision_record, recall_record, loss_record, train_acc_record,
          train_f1_record, train_precision_record, train_recall_record, train_loss_record)
     pred_res, accuracy, precision, recall, f1 = test(device, testing_generator, model)
