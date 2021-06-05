@@ -71,6 +71,8 @@ class Attention(nn.Sequential):
     def forward(self, v_P, v_D):
         #(64,48,859)
         p_raw = F.adaptive_max_pool1d(v_P, output_size=100)
+        fault_idx = torch.logical_or(torch.any(torch.isnan(v_D), dim=1), torch.any(torch.isinf(v_D), dim=1))  # Batch size
+        v_D[fault_idx] = 0
         #(64,48,100)
         #filter_size = p_raw.shape[-2]
         #p_raw = torch.reshape(p_raw, (-1, 100))

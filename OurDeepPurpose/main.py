@@ -146,7 +146,7 @@ def train(model, device, train_set, val_set, test_set, **config):
     for epo in range(train_epoch):
         loss_val = 0
         for i, (d, p, label) in enumerate(trainset_generator):
-            print(i)
+            #print(i)
             p = p.float().to(device)
             # print(d.size,p.size)
             pred = model(d, p)
@@ -208,7 +208,7 @@ def train(model, device, train_set, val_set, test_set, **config):
 
 
 def robustness_test():
-    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('train/train_new.csv')
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0, 0, 1], random_seed=2)
     config = get_config()
     model = MPNN_CNN(**config)
@@ -235,7 +235,7 @@ def robustness_test():
 
 
 def main():
-    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('train/train_new.csv')
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0.8, 0.1, 0.1], random_seed=2)
     '''
     config = generate_config(drug_encoding='MPNN', target_encoding='CNN',
@@ -253,5 +253,5 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
-    robustness_test()
+    main()
+    #robustness_test()
