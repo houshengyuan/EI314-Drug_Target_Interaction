@@ -94,7 +94,7 @@ class Attention(nn.Sequential):
         weights = torch.softmax(torch.einsum('ijk,ikl->ijl', query_drug, attention_p)/np.sqrt(48),dim=2)
         weights = torch.unsqueeze(torch.squeeze(weights,1),-1)
         if self.visual_attention:
-            np.save("attention_weight.npy",torch.squeeze(weights,-1).to('cpu').numpy(),allow_pickle=True)
+            np.save("attention_weight.npy",torch.squeeze(weights,-1).detach().to('cpu').numpy(),allow_pickle=True)
         #(64,100,1)
         ys = torch.einsum('ijk,ilj->ilk', weights, attention_p)
         #(64,48,1)->
@@ -134,7 +134,7 @@ class CNN(nn.Sequential):
         for i,l in enumerate(self.convs):
             x = F.relu(l(x))
             if i == self.layer_size - 1:
-             np.save("conv_out.npy",x.cpu().numpy(),allow_pickle=True)
+             np.save("conv_out.npy",x.detach().cpu().numpy(),allow_pickle=True)
         return x
 
 
