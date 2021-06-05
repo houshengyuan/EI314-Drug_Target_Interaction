@@ -6,6 +6,7 @@ import time
 from torch.utils.data import SequentialSampler
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from models import device as train_device, MPNN_CNN
+from torch import nn
 
 torch.manual_seed(1)
 np.random.seed(1)
@@ -21,8 +22,8 @@ def get_config():
     config['cls_hidden_dims'] = [200, 100]  # decoder classifier dim 1
 
     config['batch_size'] = 256
-    config['train_epoch'] = 50
-    config['LR'] = 0.0005
+    config['train_epoch'] = 100
+    config['LR'] = 0.005
     config['num_workers'] = 4
     config['attention']=True
     config['mpnn_hidden_size'] = 128
@@ -78,14 +79,18 @@ def plot(train_epoch, acc_record, f1_record, precision_record, recall_record, lo
 def save_model(model, path_dir, **config):
     if not os.path.exists(path_dir):
         os.makedirs(path_dir)
-    torch.save(model.state_dict(), path_dir + '/model.pt')
+    torch.save(model.module.state_dict(), path_dir + '/model.pt')
     save_dict(path_dir, config)
 
 
 def load_model(model, path_dir):
     para = torch.load(path_dir + '/model.pt')
-    model.load_state_dict(para)
-    config = load_dict(path_dir)
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model, dim=0)
+        model.load_state_dict(para)
+    else:
+        model.load_state_dict({k.replace('module.', ''): v for k, v in para.items()})
+    return model
 
 
 def test(device, data_generator, model):
@@ -202,6 +207,33 @@ def train(model, device, train_set, val_set, test_set, **config):
     save_model(model, log_dir, **config)
 
 
+def robustness_test():
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('train/train_new.csv')
+    train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0, 0, 1], random_seed=2)
+    config = get_config()
+    model = MPNN_CNN(**config)
+    model = model.to(train_device)
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model, dim=0)
+    params = {'batch_size': config['batch_size'], 'shuffle':True, 'num_workers': config['num_workers'], 'drop_last': False}
+    testset_generator = data.DataLoader(data_loader(test_set.index.values, test_set.Label.values, test_set, **config), **params)
+    model=load_model(model,"model")
+    y_pred = []
+    y_label = []
+    with torch.no_grad():
+        model.eval()
+        for i, (v_d, v_p, label) in enumerate(testset_generator):
+            if i % 10 == 0:
+                print("epoch: ", i)
+            v_p = v_p.float().to(device)
+            score = model(v_d, v_p)
+            predictions = torch.max(score.data, 1)[1].detach().cpu().numpy()
+            label_ids = label.to('cpu').numpy()
+            y_label = y_label + label_ids.flatten().tolist()
+            y_pred = y_pred + predictions.flatten().tolist()
+    return accuracy_score(y_label, y_pred), precision_score(y_label, y_pred), recall_score(y_label, y_pred), f1_score(y_label, y_pred)
+
+
 def main():
     X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('train/train_new.csv')
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0.8, 0.1, 0.1], random_seed=2)
@@ -221,5 +253,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    #robustness_test()
+    #main()
+    robustness_test()

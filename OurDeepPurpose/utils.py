@@ -152,7 +152,7 @@ def create_fold(df, fold_seed, frac):
     train_frac, val_frac, test_frac = frac
     test = df.sample(frac=test_frac, replace=False, random_state=fold_seed)
     train_val = df[~df.index.isin(test.index)]
-    val = train_val.sample(frac=val_frac / (1 - test_frac), replace=False, random_state=1)
+    val = train_val.sample(frac=(0 if val_frac==0 else val_frac / (1 - test_frac)), replace=False, random_state=1)
     train = train_val[~train_val.index.isin(val.index)]
     train.reset_index(drop=True, inplace=True)
     x = len(train)

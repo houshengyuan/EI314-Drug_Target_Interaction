@@ -1,11 +1,14 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
+import torch.cuda
+from collections import OrderedDict
 from utils import *
 import matplotlib.pyplot as plt
 import time
 from torch.utils.data import SequentialSampler
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from models import device as train_device, MPNN_CNN
+from torch import nn
 
 torch.manual_seed(1)
 np.random.seed(1)
@@ -20,9 +23,9 @@ def get_config():
     config['hidden_dim_protein'] = 256  # hidden dim of protein
     config['cls_hidden_dims'] = [200, 100]  # decoder classifier dim 1
 
-    config['batch_size'] = 256
-    config['train_epoch'] = 50
-    config['LR'] = 0.0005
+    config['batch_size'] = 512
+    config['train_epoch'] = 100
+    config['LR'] = 0.005
     config['num_workers'] = 4
     config['attention']=False
     config['mpnn_hidden_size'] = 128
@@ -78,14 +81,23 @@ def plot(train_epoch, acc_record, f1_record, precision_record, recall_record, lo
 def save_model(model, path_dir, **config):
     if not os.path.exists(path_dir):
         os.makedirs(path_dir)
-    torch.save(model.state_dict(), path_dir + '/model.pt')
+    torch.save(model.module.state_dict(), path_dir + '/model.pt')
     save_dict(path_dir, config)
 
 
 def load_model(model, path_dir):
     para = torch.load(path_dir + '/model.pt')
-    model.load_state_dict(para)
-    config = load_dict(path_dir)
+    print(para,file=open("log.txt","w+"))
+    if torch.cuda.device_count()==1:
+        new_state_dict = OrderedDict()
+        for k, v in para.items():
+            name = k[7:]  # module字段在最前面，从第7个字符开始就可以去掉module
+            new_state_dict[name] = v  # 新字典的key值对应的value一一对
+        model.load_state_dict(new_state_dict)
+    else:
+        print(model.state_dict(),file=open("log2.txt","w+"))
+        model.load_state_dict(para,strict=True)
+    return model
 
 
 def test(device, data_generator, model):
@@ -141,7 +153,7 @@ def train(model, device, train_set, val_set, test_set, **config):
     for epo in range(train_epoch):
         loss_val = 0
         for i, (d, p, label) in enumerate(trainset_generator):
-            #print(i)
+            print(i)
             p = p.float().to(device)
             # print(d.size,p.size)
             pred = model(d, p)
@@ -153,7 +165,7 @@ def train(model, device, train_set, val_set, test_set, **config):
             loss.backward()
             opt.step()
             lr_scheduler.step()
-        train_loss_record.append(loss_val)
+        train_loss_record.append(loss_val/label.size(0))
         tmp = time.time()
         # Output the training process
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(
@@ -189,7 +201,7 @@ def train(model, device, train_set, val_set, test_set, **config):
                 loss_fct = torch.nn.CrossEntropyLoss()
                 loss_ = loss_fct(pred, label)
                 lloss += loss_.item() * label.size(0)
-            loss_record.append(lloss)
+            loss_record.append(lloss/label.size(0))
     plot(train_epoch, acc_record, f1_record, precision_record, recall_record, loss_record, train_acc_record,
          train_f1_record, train_precision_record, train_recall_record, train_loss_record)
     pred_res, accuracy, precision, recall, f1 = test(device, testing_generator, model)
@@ -202,8 +214,35 @@ def train(model, device, train_set, val_set, test_set, **config):
     save_model(model, log_dir, **config)
 
 
+def robustness_test():
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
+    train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0, 0, 1], random_seed=2)
+    config = get_config()
+    model = MPNN_CNN(**config)
+    model = model.to(train_device)
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model, dim=0)
+    params = {'batch_size': config['batch_size'], 'shuffle':True, 'num_workers': config['num_workers'], 'drop_last': False}
+    testset_generator = data.DataLoader(data_loader(test_set.index.values, test_set.Label.values, test_set, **config), **params)
+    model=load_model(model,"model")
+    y_pred = []
+    y_label = []
+    with torch.no_grad():
+        model.eval()
+        for i, (v_d, v_p, label) in enumerate(testset_generator):
+            if i % 10 == 0:
+                print("epoch: ", i)
+            v_p = v_p.float().to(train_device)
+            score = model(v_d, v_p)
+            predictions = torch.max(score.data, 1)[1].detach().cpu().numpy()
+            label_ids = label.to('cpu').numpy()
+            y_label = y_label + label_ids.flatten().tolist()
+            y_pred = y_pred + predictions.flatten().tolist()
+    return accuracy_score(y_label, y_pred), precision_score(y_label, y_pred), recall_score(y_label, y_pred), f1_score(y_label, y_pred)
+
+
 def main():
-    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('train/train_new.csv')
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0.8, 0.1, 0.1], random_seed=2)
     '''
     config = generate_config(drug_encoding='MPNN', target_encoding='CNN',
