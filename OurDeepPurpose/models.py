@@ -35,8 +35,10 @@ class Classifier(nn.Sequential):  # self-defined
         self.visual_attention=config['visual_attention']
         dims = [self.input_dim_drug + self.input_dim_protein] + self.hidden_dims + [2]
         if config['attention']:
-          dims[0]+=48
-
+            if config['concatenation']:
+                dims[0]+=config['cnn_target_filters'][-1]
+            else:
+                dims[0]=self.input_dim_drug+config['cnn_target_filters'][-1]
         self.predictor = nn.ModuleList([nn.Linear(dims[i], dims[i + 1]) for i in range(len(self.hidden_dims)+1)])
         self.dropout = nn.Dropout(0.25)
         self._initialize()
@@ -63,11 +65,11 @@ class Classifier(nn.Sequential):  # self-defined
 class Attention(nn.Sequential):
     def __init__(self,**config):
         super(Attention,self).__init__()
-        self.layernorm = torch.nn.LayerNorm(normalized_shape=48)
+        self.layernorm = torch.nn.LayerNorm(normalized_shape=config['cnn_target_filters'][-1])
         self.hidden_dim_drug = config['hidden_dim_drug']
         self.visual_attention=config['visual_attention']
-        self.W_attention = nn.Linear(48, 48)
-        self.drug_reduce_dim = nn.Linear(self.hidden_dim_drug, 48)
+        self.W_attention = nn.Linear(config['cnn_target_filters'][-1], config['cnn_target_filters'][-1])
+        self.drug_reduce_dim = nn.Linear(self.hidden_dim_drug, config['cnn_target_filters'][-1])
 
     def forward(self, v_P, v_D):
         #(64,48,859)
@@ -108,6 +110,7 @@ class CNN(nn.Sequential):
         kernels = config['cnn_target_kernels']
         self.layer_size = len(config['cnn_target_filters'])
         self.visual_attention=config['visual_attention']
+        self.concatenation=config['concatenation']
         self.convs = nn.ModuleList([nn.Conv1d(in_channels=in_channel[i],
                                               out_channels=in_channel[i + 1],
                                               kernel_size=kernels[i]) for i in range(self.layer_size)])
@@ -149,7 +152,10 @@ class CNN(nn.Sequential):
         v_P = v_P.view(v_P.size(0), -1)
         v_P = self.fc(v_P.float())
         if self.attention:
-            v_P=torch.cat((v_P_attention,v_P),1)
+            if self.concatenation:
+                v_P=torch.cat((v_P_attention,v_P),1)
+            else:
+                v_P=v_P_attention
         return v_P
 
 

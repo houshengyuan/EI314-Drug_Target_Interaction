@@ -1,7 +1,5 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-import torch.cuda
-from collections import OrderedDict
 from utils import *
 import matplotlib.pyplot as plt
 import time
@@ -23,11 +21,11 @@ def get_config():
     config['hidden_dim_protein'] = 256  # hidden dim of protein
     config['cls_hidden_dims'] = [200, 100]  # decoder classifier dim 1
 
-    config['batch_size'] = 512
+    config['batch_size'] = 256
     config['train_epoch'] = 100
     config['LR'] = 0.005
     config['num_workers'] = 4
-    config['attention']=False
+    config['attention']=True
     config['mpnn_hidden_size'] = 128
     config['mpnn_depth'] = 3
 
@@ -35,6 +33,8 @@ def get_config():
     config['cnn_target_kernels'] = [24, 48, 72]
 
     config['modelpath'] = "model"
+    config['visual_attention']=False
+    config['concatenation']=True
     return config
 
 
@@ -87,16 +87,11 @@ def save_model(model, path_dir, **config):
 
 def load_model(model, path_dir):
     para = torch.load(path_dir + '/model.pt')
-    print(para,file=open("log.txt","w+"))
-    if torch.cuda.device_count()==1:
-        new_state_dict = OrderedDict()
-        for k, v in para.items():
-            name = k[7:]  # module字段在最前面，从第7个字符开始就可以去掉module
-            new_state_dict[name] = v  # 新字典的key值对应的value一一对
-        model.load_state_dict(new_state_dict)
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model, dim=0)
+        model.load_state_dict(para)
     else:
-        print(model.state_dict(),file=open("log2.txt","w+"))
-        model.load_state_dict(para,strict=True)
+        model.load_state_dict({k.replace('module.', ''): v for k, v in para.items()})
     return model
 
 
@@ -153,7 +148,9 @@ def train(model, device, train_set, val_set, test_set, **config):
     for epo in range(train_epoch):
         loss_val = 0
         for i, (d, p, label) in enumerate(trainset_generator):
+            #print(i)
             p = p.float().to(device)
+            # print(d.size,p.size)
             pred = model(d, p)
             label = Variable(torch.from_numpy(np.array(label)).long()).to(device)
             loss_fct = torch.nn.CrossEntropyLoss()
@@ -163,7 +160,7 @@ def train(model, device, train_set, val_set, test_set, **config):
             loss.backward()
             opt.step()
             lr_scheduler.step()
-        train_loss_record.append(loss_val/(len(trainset_generator)))
+        train_loss_record.append(loss_val)
         tmp = time.time()
         # Output the training process
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(
@@ -199,7 +196,7 @@ def train(model, device, train_set, val_set, test_set, **config):
                 loss_fct = torch.nn.CrossEntropyLoss()
                 loss_ = loss_fct(pred, label)
                 lloss += loss_.item() * label.size(0)
-            loss_record.append(lloss/len(validset_generator))
+            loss_record.append(lloss)
     plot(train_epoch, acc_record, f1_record, precision_record, recall_record, loss_record, train_acc_record,
          train_f1_record, train_precision_record, train_recall_record, train_loss_record)
     pred_res, accuracy, precision, recall, f1 = test(device, testing_generator, model)
@@ -230,7 +227,7 @@ def robustness_test():
         for i, (v_d, v_p, label) in enumerate(testset_generator):
             if i % 10 == 0:
                 print("epoch: ", i)
-            v_p = v_p.float().to(train_device)
+            v_p = v_p.float().to(device)
             score = model(v_d, v_p)
             predictions = torch.max(score.data, 1)[1].detach().cpu().numpy()
             label_ids = label.to('cpu').numpy()

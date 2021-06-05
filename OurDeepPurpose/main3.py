@@ -25,7 +25,7 @@ def get_config():
     config['train_epoch'] = 100
     config['LR'] = 0.005
     config['num_workers'] = 4
-    config['attention']=False
+    config['attention']=True
     config['mpnn_hidden_size'] = 128
     config['mpnn_depth'] = 3
 
@@ -34,7 +34,7 @@ def get_config():
 
     config['modelpath'] = "model"
     config['visual_attention']=False
-    config['concatenation']=True
+    config['concatenation']=False
     return config
 
 
