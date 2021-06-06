@@ -1,9 +1,0 @@
- Epoch: 1  Loss 119232.71063804626. Consumed Time 3.3666666666666667 mins
-Training at Epoch 1, Accuracy: 0.52722479667108, Precision: 0.52722479667108, Recall: 1.0 , F1: 0.6904350922277868
-Validation at Epoch 1, Accuracy: 0.13119281891938547, Precision: 0.13119281891938547, Recall: 1.0 , F1: 0.23195482984892418
- Epoch: 2  Loss 117050.81722068787. Consumed Time 6.0 mins
-Training at Epoch 2, Accuracy: 0.52722479667108, Precision: 0.52722479667108, Recall: 1.0 , F1: 0.6904350922277868
-Validation at Epoch 2, Accuracy: 0.13119281891938547, Precision: 0.13119281891938547, Recall: 1.0 , F1: 0.23195482984892418
- Epoch: 3  Loss 117045.28505325317. Consumed Time 6.266666666666667 mins
-Training at Epoch 3, Accuracy: 0.52722479667108, Precision: 0.52722479667108, Recall: 1.0 , F1: 0.6904350922277868
-Validation at Epoch 3, Accuracy: 0.13119281891938547, Precision: 0.13119281891938547, Recall: 1.0 , F1: 0.23195482984892418
