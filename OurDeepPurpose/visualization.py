@@ -9,11 +9,13 @@ import math
 def output_attention_weight():
     smiles=input("please input the SMILES: ")
     target=input("please input the Target: ")
-    model_path=input("please input the log dir")
+    model_path=input("please input the log dir: ")
     X_drugs, X_targets, y =[smiles],[target],[1.0]
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0, 0, 1], random_seed=2)
     config = get_config()
+    config['concatenation']=False
     config['visual_attention']=True
+    config['attention'] = True
     model = MPNN_CNN(**config)
     model = model.to(train_device)
     if torch.cuda.device_count() > 1:
@@ -42,10 +44,8 @@ def output_attention_weight():
     kernel_size=(MAX_SEQ_PROTEIN-sum(config['cnn_target_filters'])+3)-(100-1)*stride
     start1=kernel_size*max_index
     end1=kernel_size*(max_index+1)
-    conv_out=np.squeeze(conv_out,0)
-    max_index2=np.argmax(conv_out[:,start1,end1],dim=1)
-    start2=max_index2+start1-sum(config['cnn_target_filters'])/2
-    end2=max_index2+start1+sum(config['cnn_target_filters'])/2
+    start2=int(start1-sum(config['cnn_target_filters'])/2)
+    end2=int(end1+sum(config['cnn_target_filters'])/2)
     print("Start index: ",start2)
     print("End index: ",end2)
     print("FASTA subsequence result: ",target[start2:end2])
