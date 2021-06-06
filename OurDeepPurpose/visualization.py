@@ -34,16 +34,21 @@ def output_attention_weight():
             print("The model predicts output: ", y_pred[0])
             print("The model predicts type: ", label_ids[0])
     attention_weight=np.load("attention_weight.npy",allow_pickle=True)
+    conv_out=np.load("conv_out.npy",allow_pickle=True)
     attention_weight=attention_weight.flatten()
     max_index=np.argmax(attention_weight)
     print("Calculating.....")
-    stride=math.floor((MAX_SEQ_PROTEIN-sum(config['cnn_target_filters']))/100)
-    kernel_size=(MAX_SEQ_PROTEIN-sum(config['cnn_target_filters']))-(100-1)*stride
-    start=(sum(config['cnn_target_filters'])/2+kernel_size*max_index)
-    end=(sum(config['cnn_target_filters'])/2+kernel_size*(max_index+1))
-    print("Start index: ",start)
-    print("End index: ",end)
-    print("FASTA subsequence result: ",target[start:end])
+    stride=math.floor((MAX_SEQ_PROTEIN-sum(config['cnn_target_filters'])+3)/100)
+    kernel_size=(MAX_SEQ_PROTEIN-sum(config['cnn_target_filters'])+3)-(100-1)*stride
+    start1=kernel_size*max_index
+    end1=kernel_size*(max_index+1)
+    conv_out=np.squeeze(conv_out,0)
+    max_index2=np.argmax(conv_out[:,start1,end1],dim=1)
+    start2=max_index2+start1-sum(config['cnn_target_filters'])/2
+    end2=max_index2+start1+sum(config['cnn_target_filters'])/2
+    print("Start index: ",start2)
+    print("End index: ",end2)
+    print("FASTA subsequence result: ",target[start2:end2])
 
 
 if __name__ == "__main__":
