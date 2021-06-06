@@ -148,21 +148,22 @@ def smiles2mpnnfeature(smiles):
     return [fatoms.float(), fbonds.float(), agraph.float(), bgraph.float(), shape_tensor.float()]
 
 
-def create_fold(df, fold_seed, frac):
+def create_fold(df, fold_seed, frac,aug):
     train_frac, val_frac, test_frac = frac
     test = df.sample(frac=test_frac, replace=False, random_state=fold_seed)
     train_val = df[~df.index.isin(test.index)]
     val = train_val.sample(frac=(0 if val_frac==0 else val_frac / (1 - test_frac)), replace=False, random_state=1)
     train = train_val[~train_val.index.isin(val.index)]
     train.reset_index(drop=True, inplace=True)
-    x = len(train)
-    for i in range(x):
-        if train.loc[i]['Label'] == 1.0:
-            a = train.loc[i]
-            d = pd.DataFrame(a).T
-            train = train.append([d] * RATIO)
-    train = train.sample(frac=1, replace=True, random_state=1)
-    train.reset_index(drop=True)
+    if aug:
+        x = len(train)
+        for i in range(x):
+            if train.loc[i]['Label'] == 1.0:
+                a = train.loc[i]
+                d = pd.DataFrame(a).T
+                train = train.append([d] * RATIO)
+        train = train.sample(frac=1, replace=True, random_state=1)
+        train.reset_index(drop=True,inplace=True)
     return train, val, test
 
 
@@ -183,14 +184,14 @@ def encode_protein(df_data, column_name='FASTA', save_column_name='FASTA'):
 
 
 def data_process(X_drug=None, X_target=None, y=None, frac=[0.8, 0.1, 0.1],
-                 random_seed=1):
+                 random_seed=1, aug=True):
     if isinstance(X_target, str):
         X_target = [X_target]
     df_data = pd.DataFrame(zip(X_drug, X_target, y))
     df_data.rename(columns={0: 'SMILES', 1: 'FASTA', 2: 'Label'}, inplace=True)
     df_data = encode_drug(df_data)
     df_data = encode_protein(df_data)
-    train, val, test = create_fold(df_data, random_seed, frac)
+    train, val, test = create_fold(df_data, random_seed, frac,aug=aug)
     return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
 
 
