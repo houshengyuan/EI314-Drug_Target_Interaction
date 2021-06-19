@@ -29,16 +29,12 @@ class Embeddings(keras.Model):
         self.dropout = Dropout(dropout_rate)
 
     def call(self, inputs, training=None, mask=None):
-        #print(inputs.shape)
         seq_len = inputs.shape[1]
         #inputs=tf.reshape(inputs,(-1,16))
-        #print(seq_len)
         #exit(1)
         pos_idx = tf.range(seq_len)
         pos_idx=tf.expand_dims(pos_idx,axis=0)
-        #print(pos_idx.shape)
         pos_idx=tf.reshape(pos_idx,(-1,seq_len))
-        #print(pos_idx.shape)
 
         word_embedding = self.word_emb(pos_idx)
         pos_embedding = self.pos_emb(inputs)
@@ -66,29 +62,23 @@ class SelfAttention(keras.Model):
         self.dropout = Dropout(attention_dropout_rate)
 
     def to_scores(self, x):
-        #print(x.shape)
         #rint(x.shape[-1])
         #new_x_shape = x.shape[-1] + (self.num_heads, self.head_size)
-        #print(new_x_shape)
         #exit(1)
         x=tf.reshape(x,(-1,x.shape[1],self.num_heads,self.head_size))
-        #print(x.shape)
         #x = x.view(*new_x_shape)
         x=tf.transpose(x,perm=(0,2,1,3))
         return x
 
     def call(self, hidden_states, training=None, mask=None):
         query_layer = self.query(hidden_states)
-        #print(query_layer.shape)
         key_layer = self.key(hidden_states)
         value_layer = self.value(hidden_states)
 
         query_layer = self.to_scores(query_layer)
-        #print(query_layer.shape)  # (batch_size * num_attention_heads * seq_length * attention_head_size)
         key_layer = self.to_scores(key_layer)
         value_layer = self.to_scores(value_layer)
-        #print(key_layer.shape)
-        #print(query_layer.shape)
+
 
         scores = tf.matmul(query_layer, tf.transpose(key_layer,perm=(0,1,3,2)))
         # batch_size * num_attention_heads * seq_length * seq_length
@@ -100,19 +90,15 @@ class SelfAttention(keras.Model):
 
         attention_p = self.dropout(attention_p)  # ???
 
-        #print(value_layer.shape)
-        #print(attention_p.shape)
         # shape of value_layer: batch_size * num_attention_heads * seq_length * attention_head_size
         # shape of first context_layer: batch_size * num_attention_heads * seq_length * attention_head_size
         # shape of second context_layer: batch_size * seq_length * num_attention_heads * attention_head_size
         # context_layer 维度恢复到：batch_size * seq_length * hidden_size
         context_layer = tf.matmul(attention_p, value_layer)
         context_layer = tf.transpose(context_layer,perm=(0, 2, 1, 3))#.contiguous()
-        #print(context_layer.shape)
         context_layer=tf.reshape(context_layer,(-1,context_layer.shape[1],self.total_head_size))
         #new_context_layer_shape = context_layer.size()[:-2] + (self.total_head_size,)
         #context_layer = context_layer.view(*new_context_layer_shape)
-        #print(context_layer.shape)
         return context_layer
 
 

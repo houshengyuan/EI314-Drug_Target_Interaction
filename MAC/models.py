@@ -9,6 +9,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # overall model: MPNN+CNN+clf
 class MPNN_CNN(nn.Sequential):
     def __init__(self, **config):
+        """
+        MPNN : output the hidden representation of drug
+        CNN : output the hidden representation of protein including attention mechanism
+        Classifier : MLP for simple concatenation
+        """
         super(MPNN_CNN, self).__init__()
         self.config = config
         self.model_drug = MPNN(self.config['hidden_dim_drug'], self.config['mpnn_depth'])
@@ -17,11 +22,8 @@ class MPNN_CNN(nn.Sequential):
 
     def forward(self, v_D, v_P):
         v_D = self.model_drug(v_D)
-        #print("okv_D")
         v_P = self.model_protein(v_P,v_D)
-        #print("okv_P")
         v_f = self.classifier(v_P,v_D)
-        #print("okv_f")
         return v_f
 
 
@@ -44,15 +46,23 @@ class Classifier(nn.Sequential):  # self-defined
 
 
     def _initialize(self):
+        """
+        Use Kaiming Normalization
+        """
         for m in self.predictor:
             if isinstance(m, nn.Linear):
                 nn.init.kaiming_normal(m.weight)
 
 
     def forward(self, v_P, v_D):
+        #simple concatenation
         v_f = torch.cat((v_P, v_D), 1)
+
+        #automatically filter out nan value to prevent from thrashing backpropagation
         fault_idx = torch.logical_or(torch.any(torch.isnan(v_f), dim=1), torch.any(torch.isinf(v_f), dim=1))  # Batch size
         v_f[fault_idx] = 0
+
+        #pass out the multi-layer perceptron with dropout
         for i, l in enumerate(self.predictor):
             if i == (len(self.predictor) - 1):
                 v_f = l(v_f)
@@ -63,6 +73,9 @@ class Classifier(nn.Sequential):  # self-defined
 
 class Attention(nn.Sequential):
     def __init__(self,**config):
+        """
+
+        """
         super(Attention,self).__init__()
         self.layernorm = torch.nn.LayerNorm(normalized_shape=config['cnn_target_filters'][-1])
         self.hidden_dim_drug = config['hidden_dim_drug']
@@ -162,12 +175,14 @@ class MPNN(nn.Sequential):
         self.graph_layer = nn.Linear(self.hid_size, self.hid_size, bias=False)
 
     def forward(self, x):
+        #parameter definition
         feature_atom, feature_bond, graph_atom, graph_bond, N_ab = x
         N_ab = torch.squeeze(N_ab, dim=1)
         atom_dict = []
         N_atom = 0
         N_bond = 0
         f_atom, f_bond, g_atom, g_bond = [], [], [], []
+
         # add features and graph
         for one_record in range(N_ab.shape[0]):
             a_num = int(N_ab[one_record][0].item())
@@ -185,6 +200,7 @@ class MPNN(nn.Sequential):
         g_bond = create_var(torch.cat(g_bond, 0).long()).to(device)
         emb_input = self.input_layer(f_bond)
         mes = F.relu(emb_input)
+
         # build gnn
         for layer in range(self.depth - 1):
             nei_mes = index_select_ND(mes, 0, g_bond)

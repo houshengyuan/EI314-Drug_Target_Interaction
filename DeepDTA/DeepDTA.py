@@ -43,8 +43,6 @@ def build_combined_categorical(params, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGT
     XTinput = Input(shape=(params['max_seq_len'],), dtype='int32')
     encode_smiles = Embedding(input_dim=len(CHARISOSMISET) + 1, output_dim=128, input_length=params['max_smi_len'])(
         XDinput)
-    #encode_smiles = Embedding(input_dim=len(CHARISOSMISET) + 1, output_dim=64, input_length=params['max_smi_len'])(
-    #        XDinput)
     encode_smiles = Conv1D(filters=NUM_FILTERS, kernel_size=FILTER_LENGTH1, activation='relu', padding='valid',
                            strides=1)(encode_smiles)
     encode_smiles = Conv1D(filters=NUM_FILTERS * 2, kernel_size=FILTER_LENGTH1, activation='relu', padding='valid',
@@ -54,8 +52,6 @@ def build_combined_categorical(params, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGT
     encode_smiles = GlobalMaxPooling1D()(encode_smiles)
     encode_protein = Embedding(input_dim=len(CHARPROTSET) + 1, output_dim=128, input_length=params['max_seq_len'])(
         XTinput)
-    #encode_protein = Embedding(input_dim=len(CHARPROTSET) + 1, output_dim=64, input_length=params['max_seq_len'])(
-    #    XTinput)
     encode_protein = Conv1D(filters=NUM_FILTERS, kernel_size=FILTER_LENGTH2, activation='relu', padding='valid',
                             strides=1)(encode_protein)
     encode_protein = Conv1D(filters=NUM_FILTERS * 2, kernel_size=FILTER_LENGTH2, activation='relu', padding='valid',
@@ -71,8 +67,6 @@ def build_combined_categorical(params, NUM_FILTERS, FILTER_LENGTH1, FILTER_LENGT
     FC2 = Dropout(0.25)(FC2)
     FC2 = Dense(512, activation='relu')(FC2)
 
-    #FC1 = Dense(256, activation='relu')(encode_interaction)
-    #FC2 = Dropout(0.4)(FC1)
 
     predictions = Dense(1, activation='sigmoid')(FC2)
     interactionModel = Model(inputs=[XDinput, XTinput], outputs=[predictions])
@@ -157,9 +151,6 @@ def experiment(params, deepmethod):
     """
     perfmeasure: function that takes as input a list of correct and predicted outputs, and returns performance
     higher values should be better, so if using error measures use instead e.g. the inverse -error(Y, P)
-    :param params:
-    :param deepmethod:
-    :return:
     """
     datasplit(params)
     valperf,trainperf = general_nfold_cv(deepmethod, params)

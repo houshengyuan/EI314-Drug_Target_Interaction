@@ -6,15 +6,18 @@ import time
 from torch.utils.data import SequentialSampler
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from models import device as train_device, MPNN_CNN
-from torch import nn
 import argparse
 
+#random seed and log file
 torch.manual_seed(1)
 np.random.seed(1)
 log_dir = os.path.join('log', time.asctime(time.localtime(time.time()))).replace(" ", "_").replace(":", "_")
 
 
 def argparser():
+    """
+    parameters of model from command line
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--input_dim_drug',
@@ -123,25 +126,34 @@ def argparser():
 
 
 def get_config():
+    """
+    set all configurations
+    """
     flags=argparser()
     config = {}
+    #the input and hidden dimension of drug/protein
     config['input_dim_drug'] = flags.input_dim_drug
     config['input_dim_protein'] = flags.input_dim_protein
     config['hidden_dim_drug'] = flags.hidden_dim_drug  # hidden dim of drug
     config['hidden_dim_protein'] = flags.hidden_dim_protein  # hidden dim of protein
     config['cls_hidden_dims'] = flags.cls_hidden_dims  # decoder classifier dim 1
 
+    #training settings
     config['batch_size'] = flags.batch_size
     config['train_epoch'] = flags.train_epoch
     config['LR'] = flags.LR
     config['num_workers'] = flags.num_workers
     config['attention']=flags.attention
+
+    #parameters of MPNN
     config['mpnn_hidden_size'] = flags.mpnn_hidden_size
     config['mpnn_depth'] = flags.mpnn_depth
 
+    #parameters of CNN
     config['cnn_target_filters'] = flags.cnn_target_filters
     config['cnn_target_kernels'] = flags.cnn_target_kernels
 
+    #with/without attention mechanism, with/without concatenation, model_save path
     config['modelpath'] = flags.model_path
     config['visual_attention']= flags.visual_attention
     config['concatenation']= flags.concatenation
@@ -150,7 +162,7 @@ def get_config():
 
 def plot(train_epoch, acc_record, f1_record, precision_record, recall_record, loss_record, train_acc_record,
          train_f1_record, train_precision_record, train_recall_record, train_loss_record):
-    # plot five statistic .png picture
+    # plot five statistic .png picture, including accuracy, F1 score, precision, recall, training loss
     x = np.arange(1, train_epoch + 1)
     plt.plot(x, np.array(train_acc_record), label="train")
     plt.plot(x, np.array(acc_record), label="validation")
@@ -187,7 +199,7 @@ def plot(train_epoch, acc_record, f1_record, precision_record, recall_record, lo
     plt.savefig(os.path.join(log_dir, 'loss.png'))
     plt.clf()
 
-
+#save model parameters
 def save_model(model, path_dir, **config):
     if not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -197,7 +209,7 @@ def save_model(model, path_dir, **config):
         torch.save(model.state_dict(), path_dir + '/model.pt')
     save_dict(path_dir, config)
 
-
+#load model parameters
 def load_model(model, path_dir):
     para = torch.load(path_dir + '/model.pt')
     if torch.cuda.device_count() > 1:
@@ -208,6 +220,10 @@ def load_model(model, path_dir):
 
 
 def test(device, data_generator, model):
+    """
+    testing on validation/test generator
+    return prediction result, accuracy, precision, recall, F1
+    """
     predicted_y = []
     true_y = []
     with torch.no_grad():
@@ -221,27 +237,32 @@ def test(device, data_generator, model):
             predicted_y += predictions.flatten().tolist()
         pred_res = pd.DataFrame(predicted_y)
     model.train()
-    return pred_res, accuracy_score(true_y, predicted_y), precision_score(true_y, predicted_y), recall_score(true_y,
-                                                                                                             predicted_y), f1_score(
-        true_y, predicted_y)
+    return pred_res, accuracy_score(true_y, predicted_y), precision_score(true_y, predicted_y), recall_score(true_y,predicted_y), f1_score(true_y, predicted_y)
 
 
 def train(model, device, train_set, val_set, test_set, **config):
+    """
+    define the training process
+    """
+    #training parameters
     lr = config['LR']
     batch_size = config['batch_size']
     train_epoch = config['train_epoch']
     model = model.to(device)
     if 'num_workers' not in config.keys():
         config['num_workers'] = 0
+
     # split the workload to all cuda evenly
     if torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model, dim=0)
+
     # dynamically change the lr
     # for every 5 epoches  lr:=lr*0.8
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     miles = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
              65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120]
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(opt, milestones=miles, gamma=0.8)
+
     # data loader for train val and test(if val and test existes)
     params = {'batch_size': batch_size, 'shuffle': True, 'num_workers': config['num_workers'], 'drop_last': False}
     trainset_generator = data.DataLoader(data_loader(train_set.index.values, train_set.Label.values, train_set, **config), **params)
@@ -253,6 +274,7 @@ def train(model, device, train_set, val_set, test_set, **config):
                    'drop_last': False,
                    'sampler': SequentialSampler(info)}
     testing_generator = data.DataLoader(data_loader(test_set.index.values, test_set.Label.values, test_set, **config),**params_test)
+
     # recode the metrics when training
     train_acc_record, train_f1_record, train_precision_record, train_recall_record, train_loss_record = [], [], [], [], []
     acc_record, f1_record, precision_record, recall_record, loss_record = [], [], [], [], []
@@ -260,9 +282,7 @@ def train(model, device, train_set, val_set, test_set, **config):
     for epo in range(train_epoch):
         loss_val = 0
         for i, (d, p, label) in enumerate(trainset_generator):
-            #print(i)
             p = p.float().to(device)
-            # print(d.size,p.size)
             pred = model(d, p)
             label = Variable(torch.from_numpy(np.array(label)).long()).to(device)
             loss_fct = torch.nn.CrossEntropyLoss()
@@ -274,12 +294,14 @@ def train(model, device, train_set, val_set, test_set, **config):
             lr_scheduler.step()
         train_loss_record.append(loss_val/len(trainset_generator))
         tmp = time.time()
+
         # Output the training process
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(
             int(tmp - start) / 60) + " mins", file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(int(tmp - start) / 60) + " mins", flush=True)
         start = tmp
-        # test current model
+
+        # test current model every five epoches
         if (epo+1)%5==0:
           with torch.set_grad_enabled(False):
             _, accuracy, precision, recall, f1 = test(device, trainset_generator, model)
@@ -311,27 +333,36 @@ def train(model, device, train_set, val_set, test_set, **config):
                 lloss += loss_.item() * label.size(0)
             loss_record.append(lloss/len(validset_generator))
         save_model(model, log_dir, **config)
+
+    #plot and print out the final evaluation result
     plot(train_epoch, acc_record, f1_record, precision_record, recall_record, loss_record, train_acc_record,
          train_f1_record, train_precision_record, train_recall_record, train_loss_record)
     pred_res, accuracy, precision, recall, f1 = test(device, testing_generator, model)
     print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(
-        precision) + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1),
-          file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
+            precision) + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1),
+            file=open(os.path.join(log_dir, 'log.txt'), 'a+'), flush=True)
     print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(
-        precision) + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
+            precision) + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
+
+    #save predictive outputs
     pred_res.to_csv(os.path.join(log_dir, 'predicted_labels.csv'))
 
 
 def main():
+    #read in dataset
     X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
+    #data splition and dataloader generation
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0.8, 0.1, 0.1], random_seed=2,drug_encoding="MPNN",target_encoding="CNN")
+    #get the configuration of the model from parser
     config = get_config()
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
+    #define and initialize the model
     model = MPNN_CNN(**config)
+    #train on the model and test on validation set
     train(model, train_device, train_set, val_set, test_set, **config)
 
 
 if __name__ == '__main__':
-    #main()
-    robustness_test()
+    main()
+

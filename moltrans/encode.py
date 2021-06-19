@@ -69,25 +69,3 @@ def protein_encoder(p):
         v2 = v[:max_p]
         mask = [1]*max_p
     return v2,np.asarray(mask)
-
-'''
-class Encoder_Dataset(data.Dataset):
-    def __init__(self, list_idx, lbls, dti):
-        self.list_idx = list_idx
-        self.lbls = lbls
-        self.dti = dti
-
-    def __len__(self):
-        return len(self.list_idx)
-
-    def __getitem__(self, item):
-        idx = self.list_idx[item]
-        drug = self.dti.iloc[idx]['SMILES']
-        protein = self.dti.iloc[idx]['Target Sequence']
-
-        drug_v, drug_mask = drug_encoder(drug)
-        protein_v, protein_mask = protein_encoder(protein)
-
-        lbl = self.lbls[item]
-        return drug_v, protein_v, drug_mask, protein_mask, lbl
-'''

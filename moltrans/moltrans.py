@@ -93,7 +93,6 @@ def main():
     config = CONFIG()
     args = parser.parse_args()
     config['batch_size']=args.batch_size
-    #print(config['batch_size'])
     optim = keras.optimizers.Adam(args.lr)
 
     print("Encoding training data...")
@@ -101,8 +100,6 @@ def main():
     train_drug_v, train_protein_v, train_drug_mask, train_protein_mask = encode_data(train_drug, train_protein,
                                                                                      type='train')
     print("Finish Encoding training data.")
-    #print(train_drug_v.shape)
-    #print(train_protein_v.shape)
     #exit(1)
 
     print("Encoding validation data...")

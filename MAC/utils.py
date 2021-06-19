@@ -34,6 +34,9 @@ MAX_SEQ_DRUG = 100
 
 
 def read_file_training_dataset_drug_target_pairs(path):
+    """
+    read in dataframe of SMILES-FASTA-Label and separately return in three npy files
+    """
     file = open(path, "r")
     X_drug = []
     X_target = []
@@ -54,6 +57,9 @@ def read_file_training_dataset_drug_target_pairs(path):
 
 
 def get_mol(smiles):
+    """
+    Get the molecular object from SMILES expression
+    """
     mol = Chem.MolFromSmiles(smiles)
     if not (mol is None):
         Chem.Kekulize(mol)
@@ -61,12 +67,19 @@ def get_mol(smiles):
 
 
 def onehot_encoding(x, allowable_set):
+    """
+    Perform one-hot encoding
+    """
     if x not in allowable_set:
         x = allowable_set[-1]
     return list(map(lambda s: x == s, allowable_set))
 
 
 def atom_features(atom):
+    """
+    atom input vectors consist of the following information
+    one-hot symbol, degree, formal charge, ChiralTag, TotalNumHs, ImplicitValence, Hybridization, IsInRing
+    """
     return torch.Tensor(onehot_encoding(atom.GetSymbol(), ELEM_LIST)
                         + onehot_encoding(atom.GetDegree(), [0, 1, 2, 3, 4, 5, 6, 7])
                         + onehot_encoding(atom.GetFormalCharge(), [-1, -2, 1, 2, 0])
@@ -77,6 +90,9 @@ def atom_features(atom):
 
 
 def bond_features(bond):
+    """
+    input vector of bond, including features such as bond type
+    """
     bt = bond.GetBondType()
     stereo = int(bond.GetStereo())
     fbond = [bt == Chem.rdchem.BondType.SINGLE, bt == Chem.rdchem.BondType.DOUBLE, bt ==
@@ -101,6 +117,9 @@ def index_select_ND(source, dim, index):
 
 
 def smiles2mpnnfeature(smiles):
+    """
+    construct the MPNN input feature from SMILES string
+    """
     try:
         padding = torch.zeros(ATOM_FDIM + BOND_FDIM)
         fatoms, fbonds = [], [padding]
@@ -155,6 +174,9 @@ def smiles2mpnnfeature(smiles):
 
 
 def create_fold(df, fold_seed, frac,aug):
+    """
+    data splition of training, validation, testing and do the data augmentation on positive testing samples
+    """
     train_frac, val_frac, test_frac = frac
     test = df.sample(frac=test_frac, replace=False, random_state=fold_seed)
     train_val = df[~df.index.isin(test.index)]
@@ -174,6 +196,9 @@ def create_fold(df, fold_seed, frac,aug):
 
 
 def encode_drug(df_data, column_name='SMILES', save_column_name='SMILES',drug_encoding="MPNN"):
+    """
+    apply transformation function on SMILES input
+    """
     print('Encoding Drug By MPNN ing...')
     unique = pd.Series(df_data[column_name].unique()).apply(smiles2mpnnfeature)
     unique_dict = dict(zip(df_data[column_name].unique(), unique))
@@ -182,6 +207,9 @@ def encode_drug(df_data, column_name='SMILES', save_column_name='SMILES',drug_en
 
 
 def encode_protein(df_data, column_name='FASTA', save_column_name='FASTA',target_encoding="CNN"):
+    """
+    apply transformation function on FASTA input
+    """
     print('Encoding Protein By CNN ing...')
     cnn = pd.Series(df_data[column_name].unique()).apply(trans_protein)
     cnn_dict = dict(zip(df_data[column_name].unique(), cnn))
@@ -202,6 +230,9 @@ def data_process(X_drug=None, X_target=None, y=None, frac=[0.8, 0.1, 0.1],random
 
 class data_loader(data.Dataset):
     def __init__(self, list_IDs, labels, df, **config):
+        """
+        definition of dataloader
+        """
         self.labels = labels
         self.list_IDs = list_IDs
         self.df = df

@@ -1,31 +1,13 @@
-import os
-import csv
-import gzip
-import pprint
-import collections
-import operator 
-import pandas as pd
-
 import keras
-from keras.layers import Conv2D, MaxPooling2D,Multiply, Flatten, Dense, Input,Dropout,LSTM, Reshape, RepeatVector, Permute,Concatenate
+from keras.layers import  Dense, Input,Dropout
 from keras.models import Model,clone_model
-import numpy as np
-from keras.optimizers import SGD, Adam
-from keras.utils import to_categorical
-from keras import regularizers
-import numpy as np
+from keras.optimizers import  Adam
 import tensorflow as tf
 from keras.models import model_from_json
-from keras.callbacks import ModelCheckpoint
-from keras import regularizers
-from zipfile import ZipFile 
 
 import numpy as np
-import math
 import scipy.io as sio
-import pickle
-import math
-import sklearn
+
 
 import argparse
 import keras_metrics
