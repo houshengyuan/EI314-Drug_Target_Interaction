@@ -1,7 +1,6 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
 import pandas as pd
-
 from main import *
 import argparse
 
@@ -27,6 +26,7 @@ def argparser():
   )
   flags, unparsed = parser.parse_known_args()
   return flags
+
 
 def robustness_test(flags):
    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs(flags.test_path)
@@ -58,7 +58,9 @@ def robustness_test(flags):
    print("F1 score:", f1_score(y_label, y_pred))
    print("Saving...")
    result=pd.DataFrame({'Accuracy':float(accuracy_score(y_label, y_pred)),'F1':float(f1_score(y_label, y_pred))})
+   result.reset_index(drop=True,inplace=True)
    result.to_csv(flags.result_save_path)
+   print("Successfully saved in "+flags.result_save_path)
 
 
 if __name__ == "__main__":
