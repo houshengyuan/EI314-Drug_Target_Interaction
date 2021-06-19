@@ -21,7 +21,7 @@ def argparser():
   parser.add_argument(
       '--result_save_path',
       type=str,
-      default='result.csv',
+      default='../result.csv',
       help='Path to the result file (a .csv file)'
   )
   flags, unparsed = parser.parse_known_args()
@@ -57,9 +57,8 @@ def robustness_test(flags):
    print("recall: ", recall_score(y_label, y_pred))
    print("F1 score:", f1_score(y_label, y_pred))
    print("Saving...")
-   result=pd.DataFrame({'Accuracy':float(accuracy_score(y_label, y_pred)),'F1':float(f1_score(y_label, y_pred))})
-   result.reset_index(drop=True,inplace=True)
-   result.to_csv(flags.result_save_path)
+   result=pd.DataFrame({'Accuracy':float(accuracy_score(y_label, y_pred)),'F1':float(f1_score(y_label, y_pred))},index=[0])
+   result.to_csv(flags.result_save_path,index=False)
    print("Successfully saved in "+flags.result_save_path)
 
 
