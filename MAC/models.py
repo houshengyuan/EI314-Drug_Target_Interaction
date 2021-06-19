@@ -76,27 +76,21 @@ class Attention(nn.Sequential):
         fault_idx = torch.logical_or(torch.any(torch.isnan(v_D), dim=1), torch.any(torch.isinf(v_D), dim=1))  # Batch size
         v_D[fault_idx] = 0
         #(64,48,100)
-        #filter_size = p_raw.shape[-2]
-        #p_raw = torch.reshape(p_raw, (-1, 100))
-        #(64*48,100)
         reduced_drug = self.drug_reduce_dim(v_D)
-        #print("reduced drug ",reduced_drug.shape)
         #(64,48)
         #residual connection
         query_drug = torch.unsqueeze(torch.relu(self.W_attention(reduced_drug)),1)
         #(64,1,48)
         attention_p = torch.transpose(torch.relu(self.W_attention(torch.transpose(p_raw,1,2))),1,2)
-        #attention_p = torch.reshape(attention_p, (-1, filter_size, 100))
         #(64,48,100)
         #(1)100 keys (2)48 dimensions for every key (3)48 dimensions for every query
-        #weights = torch.tanh(torch.einsum('ijk,ilk->ilj', query_drug, attention_p))
         weights = torch.softmax(torch.einsum('ijk,ikl->ijl', query_drug, attention_p)/np.sqrt(48),dim=2)
         weights = torch.unsqueeze(torch.squeeze(weights,1),-1)
         if self.visual_attention:
             np.save("attention_weight.npy",torch.squeeze(weights,-1).detach().to('cpu').numpy(),allow_pickle=True)
         #(64,100,1)
         ys = torch.einsum('ijk,ilj->ilk', weights, attention_p)
-        #(64,48,1)->
+        #(64,48,1)
         v_P_attention=torch.squeeze(ys,-1)
         v_P_attention = self.layernorm(v_P_attention)
         return v_P_attention
