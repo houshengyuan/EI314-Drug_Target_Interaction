@@ -1,0 +1,6 @@
+ Epoch: 1  Loss 214.1963397860527. Consumed Time 0.6666666666666666 mins
+ Epoch: 2  Loss 0.0. Consumed Time 0.6833333333333333 mins
+ Epoch: 3  Loss 0.0. Consumed Time 0.6833333333333333 mins
+ Epoch: 4  Loss 0.0. Consumed Time 0.6666666666666666 mins
+ Epoch: 5  Loss 0.0. Consumed Time 1.0833333333333333 mins
+Training at Epoch 5, Accuracy: 1.0, Precision: 0.0, Recall: 0.0 , F1: 0.0

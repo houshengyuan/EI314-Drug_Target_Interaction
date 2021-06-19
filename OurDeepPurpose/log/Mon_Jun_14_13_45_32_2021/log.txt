@@ -1,0 +1,1 @@
+ Epoch: 1  Loss 214.1963397860527. Consumed Time 0.8333333333333334 mins

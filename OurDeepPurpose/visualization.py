@@ -36,7 +36,6 @@ def output_attention_weight():
             print("The model predicts output: ", y_pred[0])
             print("The model predicts type: ", label_ids[0])
     attention_weight=np.load("attention_weight.npy",allow_pickle=True)
-    conv_out=np.load("conv_out.npy",allow_pickle=True)
     attention_weight=attention_weight.flatten()
     max_index=np.argmax(attention_weight)
     print("Calculating.....")
@@ -44,11 +43,9 @@ def output_attention_weight():
     kernel_size=(MAX_SEQ_PROTEIN-sum(config['cnn_target_filters'])+3)-(100-1)*stride
     start1=kernel_size*max_index
     end1=kernel_size*(max_index+1)
-    start2=int(start1-sum(config['cnn_target_filters'])/2)
-    end2=int(end1+sum(config['cnn_target_filters'])/2)
-    print("Start index: ",start2)
-    print("End index: ",end2)
-    print("FASTA subsequence result: ",target[start2:end2])
+    print("Start index: ",start1)
+    print("End index: ",end1)
+    print("FASTA subsequence result: ",target[start1:end1])
 
 
 if __name__ == "__main__":

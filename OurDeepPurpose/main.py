@@ -25,7 +25,7 @@ def get_config():
     config['train_epoch'] = 100
     config['LR'] = 0.005
     config['num_workers'] = 4
-    config['attention']=False
+    config['attention']=True
     config['mpnn_hidden_size'] = 128
     config['mpnn_depth'] = 3
 
@@ -34,7 +34,7 @@ def get_config():
 
     config['modelpath'] = "model"
     config['visual_attention']=False
-    config['concatenation']=True
+    config['concatenation']=False
     return config
 
 
@@ -81,17 +81,19 @@ def plot(train_epoch, acc_record, f1_record, precision_record, recall_record, lo
 def save_model(model, path_dir, **config):
     if not os.path.exists(path_dir):
         os.makedirs(path_dir)
-    torch.save(model.module.state_dict(), path_dir + '/model.pt')
+    if torch.cuda.device_count()>1:
+        torch.save(model.module.state_dict(), path_dir + '/model.pt')
+    else:
+        torch.save(model.state_dict(), path_dir + '/model.pt')
     save_dict(path_dir, config)
 
 
 def load_model(model, path_dir):
     para = torch.load(path_dir + '/model.pt')
     if torch.cuda.device_count() > 1:
-        model = nn.DataParallel(model, dim=0)
-        model.load_state_dict(para)
+        model.module.load_state_dict(para)
     else:
-        model.load_state_dict({k.replace('module.', ''): v for k, v in para.items()})
+        model.load_state_dict(para)
     return model
 
 
@@ -168,7 +170,8 @@ def train(model, device, train_set, val_set, test_set, **config):
         print(' Epoch: ' + str(epo + 1) + '  Loss ' + str(loss_val) + ". Consumed Time " + str(int(tmp - start) / 60) + " mins", flush=True)
         start = tmp
         # test current model
-        with torch.set_grad_enabled(False):
+        if (epo+1)%5==0:
+          with torch.set_grad_enabled(False):
             _, accuracy, precision, recall, f1 = test(device, trainset_generator, model)
             print('Training at Epoch ' + str(epo + 1) + ', Accuracy: ' + str(accuracy) + ', Precision: ' + str(
                 precision) + ', Recall: ' + str(recall) + ' , F1: ' + str(f1),
@@ -197,6 +200,7 @@ def train(model, device, train_set, val_set, test_set, **config):
                 loss_ = loss_fct(pred, label)
                 lloss += loss_.item() * label.size(0)
             loss_record.append(lloss/len(validset_generator))
+        save_model(model, log_dir, **config)
     plot(train_epoch, acc_record, f1_record, precision_record, recall_record, loss_record, train_acc_record,
          train_f1_record, train_precision_record, train_recall_record, train_loss_record)
     pred_res, accuracy, precision, recall, f1 = test(device, testing_generator, model)
@@ -206,11 +210,10 @@ def train(model, device, train_set, val_set, test_set, **config):
     print('Test at Epoch ' + str(epo + 1) + ' , Accuracy: ' + str(accuracy) + ', Precision:' + str(
         precision) + ' , Recall: ' + str(recall) + ' , F1: ' + str(f1), flush=True)
     pred_res.to_csv(os.path.join(log_dir, 'predicted_labels.csv'))
-    save_model(model, log_dir, **config)
 
 
 def robustness_test():
-    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('robust/test_set0.csv')
     train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0, 0, 1], random_seed=2,aug=False)
     config = get_config()
     config['concatenation'] = False
@@ -221,7 +224,7 @@ def robustness_test():
         model = nn.DataParallel(model, dim=0)
     params = {'batch_size': config['batch_size'], 'shuffle':True, 'num_workers': config['num_workers'], 'drop_last': False}
     testset_generator = data.DataLoader(data_loader(test_set.index.values, test_set.Label.values, test_set, **config), **params)
-    model=load_model(model,"log/attention_no_concatenation")
+    model=load_model(model,"model")
     y_pred = []
     y_label = []
     with torch.no_grad():
@@ -240,18 +243,9 @@ def robustness_test():
     print("recall: ", recall_score(y_label, y_pred))
     print("F1 score:", f1_score(y_label, y_pred))
 
-
 def main():
-    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('train/train_new.csv')
-    train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0.8, 0.1, 0.1], random_seed=2)
-    '''
-    config = generate_config(drug_encoding='MPNN', target_encoding='CNN',
-                             cls_hidden_dims=[200, 100], train_epoch=100, LR=1e-4,
-                             batch_size=256, hidden_dim_drug=128,
-                             hidden_dim_protein=256, preTrain=True,
-                             mpnn_hidden_size=128, mpnn_depth=3,
-                             cnn_target_filters=[16, 32, 48], cnn_target_kernels=[24, 48, 72], num_workers=4)
-    '''
+    X_drugs, X_targets, y = read_file_training_dataset_drug_target_pairs('../train/train_new.csv')
+    train_set, val_set, test_set = data_process(X_drugs, X_targets, y, frac=[0.8, 0.1, 0.1], random_seed=2,drug_encoding="MPNN",target_encoding="CNN")
     config = get_config()
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)

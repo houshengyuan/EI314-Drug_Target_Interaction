@@ -40,10 +40,16 @@ def read_file_training_dataset_drug_target_pairs(path):
     y = []
     for i, aline in enumerate(file):
         if i != 0:
-            values = aline.strip('\n').split(',')
-            X_drug.append(values[0])
-            X_target.append(values[1])
-            y.append(float(values[2]))
+            try:
+                values = aline.strip('\n').split(',')
+                a=values[0]
+                b=values[1]
+                c=float(values[2])
+                X_drug.append(a)
+                X_target.append(b)
+                y.append(c)
+            except:
+                continue
     return np.array(X_drug), np.array(X_target), np.array(y)
 
 
@@ -167,7 +173,7 @@ def create_fold(df, fold_seed, frac,aug):
     return train, val, test
 
 
-def encode_drug(df_data, column_name='SMILES', save_column_name='SMILES'):
+def encode_drug(df_data, column_name='SMILES', save_column_name='SMILES',drug_encoding="MPNN"):
     print('Encoding Drug By MPNN ing...')
     unique = pd.Series(df_data[column_name].unique()).apply(smiles2mpnnfeature)
     unique_dict = dict(zip(df_data[column_name].unique(), unique))
@@ -175,7 +181,7 @@ def encode_drug(df_data, column_name='SMILES', save_column_name='SMILES'):
     return df_data
 
 
-def encode_protein(df_data, column_name='FASTA', save_column_name='FASTA'):
+def encode_protein(df_data, column_name='FASTA', save_column_name='FASTA',target_encoding="CNN"):
     print('Encoding Protein By CNN ing...')
     cnn = pd.Series(df_data[column_name].unique()).apply(trans_protein)
     cnn_dict = dict(zip(df_data[column_name].unique(), cnn))
@@ -183,14 +189,13 @@ def encode_protein(df_data, column_name='FASTA', save_column_name='FASTA'):
     return df_data
 
 
-def data_process(X_drug=None, X_target=None, y=None, frac=[0.8, 0.1, 0.1],
-                 random_seed=1, aug=True):
+def data_process(X_drug=None, X_target=None, y=None, frac=[0.8, 0.1, 0.1],random_seed=1, aug=True,drug_encoding="MPNN",target_encoding="CNN"):
     if isinstance(X_target, str):
         X_target = [X_target]
     df_data = pd.DataFrame(zip(X_drug, X_target, y))
     df_data.rename(columns={0: 'SMILES', 1: 'FASTA', 2: 'Label'}, inplace=True)
-    df_data = encode_drug(df_data)
-    df_data = encode_protein(df_data)
+    df_data = encode_drug(df_data,drug_encoding=drug_encoding)
+    df_data = encode_protein(df_data,target_encoding=target_encoding)
     train, val, test = create_fold(df_data, random_seed, frac,aug=aug)
     return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
 
@@ -209,7 +214,8 @@ class data_loader(data.Dataset):
         'Generates one sample of data'
         index = self.list_IDs[index]
         v_d = self.df.iloc[index]['SMILES']
-        v_p = protein_2_embed(self.df.iloc[index]['FASTA'])
+        v_p = self.df.iloc[index]['FASTA']
+        v_p = protein_2_embed(v_p)
         y = self.labels[index]
         return v_d, v_p, y
 

@@ -233,41 +233,28 @@ class MolTrans(keras.Model):
 
         drug_emb=self.emb_drug(d)
         protein_emb=self.emb_protein(p)
-        #print(drug_emb.shape)
 
         drug_encoder=self.drug_encoder(tf.cast(drug_emb,tf.float32),mask=tf.cast(ex_d_mask,tf.float32))
         protein_encoder = self.protein_encoder(tf.cast(protein_emb,tf.float32), mask=tf.cast(ex_p_mask,tf.float32))
 
-        #print(drug_encoder.shape)
-        #print(protein_encoder.shape)
+
         drug_encoder=tf.expand_dims(drug_encoder,2)
         drug_aug = tf.tile(drug_encoder,[1,1,self.max_protein_seq,1])  # repeat along protein size
         protein_encoder=tf.expand_dims(protein_encoder,1)
         protein_aug = tf.tile(protein_encoder, [1,self.max_drug_seq, 1, 1])  # repeat along drug size
-        #print(drug_aug.shape)
-        #print(protein_aug.shape)
 
         interaction=drug_aug*protein_aug
         interaction=tf.reshape(interaction,(-1,self.embed_size,self.max_drug_seq,self.max_protein_seq))
-        #interaction = interaction.view(int(self.batch_size / self.gpus), -1, self.max_drug_seq, self.max_protein_seq)
-        #print(interaction.shape)
+
         # batch_size x embed size x max_drug_seq_len x max_protein_seq_len
         interaction=tf.reduce_sum(interaction,axis=1)
         interaction=tf.expand_dims(interaction,axis=1)
-        #print(interaction.shape)
-
 
         interaction=Dropout(self.dropout_rate)(interaction)
-        #print(interaction.shape)
         out=self.cnn_layer(interaction)
-        #print(out.shape)
-
-        #out = out.view(int(self.batch_size / self.gpus), -1)
         out=tf.reshape(out,(-1,self.flat_dim))
-        #print(out.shape)
 
         out=self.decoder(out)
-        #print(out.shape)
 
         return out
 
