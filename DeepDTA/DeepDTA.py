@@ -10,7 +10,7 @@ from arguments import *
 from keras import backend as K
 import keras
 from keras.callbacks import History
-from datahelper import *
+from DeepDTA.datahelper import *
 from keras.layers import Dropout
 from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.layers import Input, Embedding, Dense
@@ -18,7 +18,7 @@ from keras.models import Model
 from keras.utils import plot_model
 import json, time
 import pandas as pd
-from visualization import *
+from DeepDTA.visualization import *
 
 os.environ['PYTHONHASHSEED'] = '0'
 
