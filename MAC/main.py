@@ -7,34 +7,144 @@ from torch.utils.data import SequentialSampler
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 from models import device as train_device, MPNN_CNN
 from torch import nn
+import argparse
 
 torch.manual_seed(1)
 np.random.seed(1)
 log_dir = os.path.join('log', time.asctime(time.localtime(time.time()))).replace(" ", "_").replace(":", "_")
 
 
+def argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--input_dim_drug',
+        type=int,
+        default=1024,
+        help='input dim drug'
+    )
+    parser.add_argument(
+        '--input_dim_protein',
+        type=int,
+        default=8420,
+        help='input dim protein'
+    )
+    parser.add_argument(
+        '--hidden_dim_drug',
+        type=int,
+        default=128,
+        help='hidden dim drug'
+    )
+    parser.add_argument(
+        '--hidden_dim_protein',
+        type=int,
+        default=256,
+        help='hidden dim protein'
+    )
+    parser.add_argument(
+        '--cls_hidden_dims',
+        type=list,
+        default=[200, 100],
+        help='cls hidden dims'
+    )
+    parser.add_argument(
+        '--batch_size',
+        type=int,
+        default=256,
+        help='batch size'
+    )
+    parser.add_argument(
+        '--train_epoch',
+        type=int,
+        default=100,
+        help='train epoch'
+    )
+    parser.add_argument(
+        '--LR',
+        type=float,
+        default=0.005,
+        help='learning rate'
+    )
+    parser.add_argument(
+        '--num_workers',
+        type=int,
+        default=2,
+        help='num workers'
+    )
+    parser.add_argument(
+        '--attention',
+        type=bool,
+        default=True,
+        help='attention'
+    )
+    parser.add_argument(
+        '--mpnn_hidden_size',
+        type=int,
+        default=128,
+        help='mpnn hidden size'
+    )
+    parser.add_argument(
+        '--mpnn_depth',
+        type=int,
+        default=3,
+        help='mpnn depth'
+    )
+    parser.add_argument(
+        '--cnn_target_filters',
+        type=list,
+        default=[16,32,48],
+        help='cnn target filters'
+    )
+    parser.add_argument(
+        '--cnn_target_kernels',
+        type=list,
+        default=[24,48,96],
+        help='cnn target kernels'
+    )
+    parser.add_argument(
+        '--modelpath',
+        type=str,
+        default="model",
+        help='model path'
+    )
+    parser.add_argument(
+        '--visual_attention',
+        type=bool,
+        default=False,
+        help='visual attention'
+    )
+    parser.add_argument(
+        '--concatenation',
+        type=bool,
+        default=False,
+        help='concatenation'
+    )
+    flags, unparsed = parser.parse_known_args()
+    return flags
+
+
 def get_config():
+    flags=argparser()
     config = {}
-    config['input_dim_drug'] = 1024
-    config['input_dim_protein'] = 8420
-    config['hidden_dim_drug'] = 128  # hidden dim of drug
-    config['hidden_dim_protein'] = 256  # hidden dim of protein
-    config['cls_hidden_dims'] = [200, 100]  # decoder classifier dim 1
+    config['input_dim_drug'] = flags.input_dim_drug
+    config['input_dim_protein'] = flags.input_dim_protein
+    config['hidden_dim_drug'] = flags.hidden_dim_drug  # hidden dim of drug
+    config['hidden_dim_protein'] = flags.hidden_dim_protein  # hidden dim of protein
+    config['cls_hidden_dims'] = flags.cls_hidden_dims  # decoder classifier dim 1
 
-    config['batch_size'] = 256
-    config['train_epoch'] = 100
-    config['LR'] = 0.005
-    config['num_workers'] = 4
-    config['attention']=True
-    config['mpnn_hidden_size'] = 128
-    config['mpnn_depth'] = 3
+    config['batch_size'] = flags.batch_size
+    config['train_epoch'] = flags.train_epoch
+    config['LR'] = flags.LR
+    config['num_workers'] = flags.num_workers
+    config['attention']=flags.attention
+    config['mpnn_hidden_size'] = flags.mpnn_hidden_size
+    config['mpnn_depth'] = flags.mpnn_depth
 
-    config['cnn_target_filters'] = [16, 32, 48]
-    config['cnn_target_kernels'] = [24, 48, 72]
+    config['cnn_target_filters'] = flags.cnn_target_filters
+    config['cnn_target_kernels'] = flags.cnn_target_kernels
 
-    config['modelpath'] = "model"
-    config['visual_attention']=False
-    config['concatenation']=False
+    config['modelpath'] = flags.model_path
+    config['visual_attention']= flags.visual_attention
+    config['concatenation']= flags.concatenation
     return config
 
 
