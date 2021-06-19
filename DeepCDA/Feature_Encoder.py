@@ -1,44 +1,16 @@
 
 from __future__ import print_function
-import numpy as np
 import keras
 import tensorflow as tf
-import random as rn
-from keras import backend as K
-from itertools import product
+from keras.layers import Dropout
+from keras.layers import Conv1D, GlobalMaxPooling1D
+from keras.layers import Input, Embedding, Dense,Lambda, TimeDistributed, LSTM, Add
 from keras.models import Model
-from keras.preprocessing import sequence
-from keras.models import Sequential, load_model
-from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding
-from keras.layers import Conv1D, GlobalMaxPooling1D, MaxPooling1D, GlobalAveragePooling1D
-from keras.layers.normalization import BatchNormalization
-from keras.layers import Conv2D, GRU
-from keras.layers import Input, Embedding, LSTM, Dense, TimeDistributed, Masking, RepeatVector, merge, Flatten,Lambda, TimeDistributed, LSTM, Add
-from keras.models import Model
-from keras.utils import plot_model
-from keras.layers import Bidirectional
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras import optimizers, layers
-import sys, pickle, os
-import math, json, time
+from keras.callbacks import EarlyStopping
 from keras.regularizers import l2
-import decimal
 from keras.optimizers import Adam
-import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
-from random import shuffle
-from copy import deepcopy
-from sklearn import preprocessing
-import sys, re, math, time
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.io as sio
-import json
-import pickle
-import collections
-from collections import OrderedDict
-from matplotlib.pyplot import cm
 import argparse
 import keras_metrics
 
