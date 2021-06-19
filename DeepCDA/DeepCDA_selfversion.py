@@ -80,9 +80,9 @@ def label2affinity(label):
 
 def generate_mat():
     # param setting
-    TRAINCSVURL='D:/大三下/工科创3E/code/train.csv'
-    VALCSVURL='D:/大三下/工科创3E/code/validation.csv'
-    MATURL='D:/大三下/工科创3E/code/mydataset_folded_v2.mat'
+    TRAINCSVURL='../train/train.csv'
+    VALCSVURL='../validation/validation.csv'
+    MATURL='datasets/mydataset_folded_v2.mat'
     TRAINSPLITRATIO=0.8                # 80% --> train   20% --> test
 
     # load .csv dataset
@@ -119,27 +119,13 @@ def generate_mat():
         val_folds_proteins.append(convert_fasta(valdataset[i][1]))
         val_folds_affinity.append(label2affinity(valdataset[i][2]))
 
-
-
-
-    #print("train_folds_drugs:{}".format(np.array(train_folds_drugs).shape))
-    #print("train_folds_proteins:{}".format(np.array(train_folds_proteins).shape))
-    #print("train_folds_affinity:{}".format(np.array(train_folds_affinity).shape))
-    #print("test_folds_drugs:{}".format(np.array(test_folds_drugs).shape))
-    #print("test_folds_proteins:{}".format(np.array(test_folds_proteins).shape))
-    #print("test_folds_affinity:{}".format(np.array(test_folds_affinity).shape))
-    #print("val_folds_drugs:{}".format(np.array(val_folds_drugs).shape))
-    #print("val_folds_proteins:{}".format(np.array(val_folds_proteins).shape))
-    #print("val_folds_affinity:{}".format(np.array(val_folds_affinity).shape))
-
-    #scio.savemat(MATURL, {'train_folds_drugs':np.array([train_folds_drugs,train_folds_drugs,train_folds_drugs]),'train_folds_proteins':np.array([train_folds_proteins,train_folds_proteins,train_folds_proteins]),'train_folds_affinity':np.array([train_folds_affinity,train_folds_affinity,train_folds_affinity,]),'test_folds_drugs':np.array([test_folds_drugs,test_folds_drugs,test_folds_drugs]),'test_folds_proteins':np.array([test_folds_proteins,test_folds_proteins,test_folds_proteins]),'test_folds_affinity':np.array([test_folds_affinity,test_folds_affinity,test_folds_affinity]),'val_folds_drugs':np.array([val_folds_drugs,val_folds_drugs,val_folds_drugs]),'val_folds_proteins':np.array([val_folds_proteins,val_folds_proteins,val_folds_proteins]),'val_folds_affinity':np.array([val_folds_affinity,val_folds_affinity,val_folds_affinity])})
     scio.savemat(MATURL, {'train_folds_drugs':np.array([train_folds_drugs]),'train_folds_proteins':np.array([train_folds_proteins]),'train_folds_affinity':np.array([train_folds_affinity]),'test_folds_drugs':np.array([test_folds_drugs]),'test_folds_proteins':np.array([test_folds_proteins]),'test_folds_affinity':np.array([test_folds_affinity]),'val_folds_drugs':np.array([val_folds_drugs]),'val_folds_proteins':np.array([val_folds_proteins]),'val_folds_affinity':np.array([val_folds_affinity])})
 
 
 
 def generate_test():
-    VALCSVURL='D:/大三下/工科创3E/code/validation.csv'
-    MATURL='D:/大三下/工科创3E/code/mydataset_val.mat'
+    VALCSVURL='../validation/validation.csv'
+    MATURL='datasets/mydataset_val.mat'
 
     valdataset=pd.read_csv(VALCSVURL)
     valdataset=shuffle(valdataset).values.tolist()
@@ -156,8 +142,8 @@ def generate_test():
 
 
 def generate_train():
-    TRAINCSVURL='D:/大三下/工科创3E/code/train.csv'
-    MATURL='D:/大三下/工科创3E/code/mydataset_train.mat'
+    TRAINCSVURL='../train/train.csv'
+    MATURL='datasets/mydataset_train.mat'
 
     traindataset=pd.read_csv(TRAINCSVURL)
     traindataset=shuffle(traindataset).values.tolist()
@@ -174,5 +160,3 @@ def generate_train():
 
 
 generate_mat()
-#generate_test()
-#generate_train()

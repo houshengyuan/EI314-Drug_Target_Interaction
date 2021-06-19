@@ -316,7 +316,7 @@ def DomainAdaptation(flags):
              model.save_weights('DeepCDA_weights'+str(iteration)+'.h5')
 
              # Save the model architecture
-             with open('DeepCDA_architecture'+str(iteration)+'.json', 'w') as f:
+             with open('DeepCDA_architecture'+str(iteration)+'.json', 'w+') as f:
                   f.write(model.to_json())
 
 

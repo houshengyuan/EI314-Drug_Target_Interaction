@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import pickle
 np.random.seed(0)
-log=open("statistics.txt","a+",encoding="UTF-8")
 
 
 def read_inpd(filepath):
@@ -36,6 +35,7 @@ def read_in(filepath):
 
 
 def analysis1(data):
+    log = open("statistics.txt", "a+", encoding="UTF-8")
     print("数据的总长度为",len(data),file=log)
     posdata=data[data['Label'].isin([1])]
     negdata=data[data['Label'].isin([0])]
@@ -61,6 +61,7 @@ def analysis1(data):
 
 
 def analysis2(data):
+    log = open("statistics.txt", "a+", encoding="UTF-8")
     pos=data[data['Label']==1]
     pos.reset_index(drop=True,inplace=True)
     neg=data[data['Label']==0]
