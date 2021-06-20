@@ -1,7 +1,7 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
 import pandas as pd
-from main import *
+from MAC.main import *
 import argparse
 from torch import nn
 
@@ -10,19 +10,19 @@ def argparser():
   parser.add_argument(
       '--model_dir',
       type=str,
-      default='model',
+      default='MAC/model',
       help='Path to the model dir (a directory)'
   )
   parser.add_argument(
      '--test_path',
      type=str,
-     default='../test.csv',
+     default='test.csv',
      help='Path to the test dataset (a .csv file)'
   )
   parser.add_argument(
       '--result_save_path',
       type=str,
-      default='../result.csv',
+      default='result.csv',
       help='Path to the result file (a .csv file)'
   )
   flags, unparsed = parser.parse_known_args()
