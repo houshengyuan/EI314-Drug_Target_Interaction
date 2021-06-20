@@ -29,23 +29,31 @@ The data description is same with ISBI Challenge except that we split the raw tr
 test set. The downloaded data set consists of 30 samples, 25 for train and 5 for test. We simply train our model on the newly split data sets and did not use pre-training models. 
 
 Here is one example for training data (raw image and corresponding label):
+## MAC
 
 <table>
   <tr>
-    <td><img src="/dataset/train_img/0.png" width=270 height=270></td>
-    <td><img src="/dataset/train_label/0.png" width=270 height=270></td>
+    <td><img src="img/MAC.png" width=500 height=270></td>
+  </tr>
+</table>
+
+## MPNN
+
+<table>
+  <tr>
+    <td><img src="img/MPNN.png" width=500 height=270></td>
+  </tr>
+</table>
+
+## Attention-CNN
+
+<table>
+  <tr>
+    <td><img src="img/CNN-attention.png" width=500 height=270></td>
   </tr>
 </table>
  
- 
-<table>
-  <tr>
-    <td><img src="/dataset/train_img/0.png" width=270 height=270></td>
-    <td><img src="/dataset/train_label/0.png" width=270 height=270></td>
-  </tr>
- </table>
- 
-# Data Augmentation
+# Visualization of Drug-target Interaction
 
 For the fact that the training data size is too small (we have only 25 training images),
 we apply image augmentation by:
@@ -60,8 +68,8 @@ datagen = ImageDataGenerator(rotation_range=20, shear_range=0.2, width_shift_ran
 After that, we get an augmented dataset of **10000** images. Here is one example for augmented training data:
 <table>
   <tr>
-    <td><img src="/dataset/aug/0_24.png" width=270 height=270></td>
-    <td><img src="/dataset/aug_lb/0_24.png" width=270 height=270></td>
+    <td><img src="img/global_interaction.png" width=270 height=270></td>
+    <td><img src="img/local_interaction.png" width=270 height=270></td>
   </tr>
  </table>
 
@@ -80,6 +88,7 @@ After that, we get an augmented dataset of **10000** images. Here is one example
 - `pandas`
 - `sklearn`
 - `rdkit`
+- `pickle`
 
 
 # Group Members
