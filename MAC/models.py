@@ -74,7 +74,10 @@ class Classifier(nn.Sequential):  # self-defined
 class Attention(nn.Sequential):
     def __init__(self,**config):
         """
-
+        Query: learned SMILES representation vector 64 48-dim hidden vectors
+        Key: 100 48-dim keys, every key could be mapped back to an area of protein
+        Value:  64(batch size) 48-dim output values of attention mechanism
+        Residual connection and layer normalization is also adapted here
         """
         super(Attention,self).__init__()
         self.layernorm = torch.nn.LayerNorm(normalized_shape=config['cnn_target_filters'][-1])
@@ -84,26 +87,26 @@ class Attention(nn.Sequential):
         self.drug_reduce_dim = nn.Linear(self.hidden_dim_drug, config['cnn_target_filters'][-1])
 
     def forward(self, v_P, v_D):
-        #(64,48,859)
+        # shape=(64,48,859)
         p_raw = F.adaptive_max_pool1d(v_P, output_size=100)
         fault_idx = torch.logical_or(torch.any(torch.isnan(v_D), dim=1), torch.any(torch.isinf(v_D), dim=1))  # Batch size
         v_D[fault_idx] = 0
-        #(64,48,100)
+        #shape=(64,48,100)
         reduced_drug = self.drug_reduce_dim(v_D)
-        #(64,48)
         #residual connection
+        # shape=(64,48)
         query_drug = torch.unsqueeze(torch.relu(self.W_attention(reduced_drug)),1)
-        #(64,1,48)
+        #shape=(64,1,48)
         attention_p = torch.transpose(torch.relu(self.W_attention(torch.transpose(p_raw,1,2))),1,2)
-        #(64,48,100)
+        #shape=(64,48,100)
         #(1)100 keys (2)48 dimensions for every key (3)48 dimensions for every query
         weights = torch.softmax(torch.einsum('ijk,ikl->ijl', query_drug, attention_p)/np.sqrt(48),dim=2)
         weights = torch.unsqueeze(torch.squeeze(weights,1),-1)
         if self.visual_attention:
             np.save("attention_weight.npy",torch.squeeze(weights,-1).detach().to('cpu').numpy(),allow_pickle=True)
-        #(64,100,1)
+        #shape=(64,100,1)
         ys = torch.einsum('ijk,ilj->ilk', weights, attention_p)
-        #(64,48,1)
+        #shape=(64,48,1)
         v_P_attention=torch.squeeze(ys,-1)
         v_P_attention = self.layernorm(v_P_attention)
         return v_P_attention
@@ -111,6 +114,10 @@ class Attention(nn.Sequential):
 
 class CNN(nn.Sequential):
     def __init__(self, **config):
+        """
+        Three continuous layers of convolutional block, including convolution and activation
+        Finally, these blockes are attached to a global adaptive max pooling and output 100 keys with 48 dimensions
+        """
         super(CNN, self).__init__()
         in_channel = [26] + config['cnn_target_filters']
         kernels = config['cnn_target_kernels']
@@ -167,6 +174,9 @@ class CNN(nn.Sequential):
 
 class MPNN(nn.Sequential):
     def __init__(self, hid_size, depth):
+        """
+        Define the message passing neural network
+        """
         super(MPNN, self).__init__()
         self.hid_size = hid_size
         self.depth = depth
