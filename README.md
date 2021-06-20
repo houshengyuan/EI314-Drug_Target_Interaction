@@ -54,7 +54,16 @@ The output of Attention Layer has the same size as the embedding of proteins. An
   </tr>
  </table>
 
+# Real-world Test
 
+Here we simulate the approximate distribution of TA-provided dataset. It is composed of 1,500 randomly sampled positive pairs+ 2,500,000 randomly sampled negative pairs.
+
+<table>
+  <tr>
+    <td><img src="img/real-world_test.png" width=270 height=270></td>
+  </tr>
+</table>
+ 
 ## Requirements
 
 - `tensorflow`
