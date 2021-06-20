@@ -7,13 +7,10 @@ Here, our research group raised a new frame called MAC, which combines Message P
 
 # Test examples 
 
-
+Here is the testing command on the model path
 ```
-from keras.preprocessing.image import ImageDataGenerator
-
-datagen = ImageDataGenerator(rotation_range=20, shear_range=0.2, width_shift_range=0.2, height_shift_range=0.2,
-                                 zoom_range=0.2,
-                                 vertical_flip=True, horizontal_flip=True, fill_mode='constant', cval=0)
+cd MAC
+python test.py --model_dir 'model' --test_path '../test.csv' --result_save_path '../result.csv' 
 ```
 
 # Models and methods
