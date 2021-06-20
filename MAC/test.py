@@ -16,7 +16,7 @@ def argparser():
   parser.add_argument(
      '--test_path',
      type=str,
-     default='../test/test.csv',
+     default='../test.csv',
      help='Path to the test dataset (a .csv file)'
   )
   parser.add_argument(
