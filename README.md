@@ -69,7 +69,7 @@ After that, we get an augmented dataset of **10000** images. Here is one example
 <table>
   <tr>
     <td><img src="img/global_interaction.png" width=270 height=270></td>
-    <td><img src="img/local_interaction.png" width=300 height=270></td>
+    <td><img src="img/local_interaction.png" width=400 height=270></td>
   </tr>
  </table>
 
