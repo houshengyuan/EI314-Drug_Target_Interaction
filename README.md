@@ -5,6 +5,17 @@ Drug Target Interaction (DTI) prediction now has attracted a large number of sch
 
 Here, our research group raised a new frame called MAC, which combines Message Passing Neural Network(MPNN) and Attention enhanced CNN respectively for the encoding of Drugs and Proteins. MAC has outstanding ability to learn and extract the spatial features of drug molecules and excellent ability to accurately locate proteins' action sites because of MPNN and attention mechanism so that MAC achieved Accuracy=0.99 and F1=0.98 on the first **100,000** pairs of dataset provided by TA. Subsequent control variate experiments, robustness test and visualization verified the structural effectiveness, strong robustness and great interpretability of MAC.
 
+# Test examples 
+
+
+```
+from keras.preprocessing.image import ImageDataGenerator
+
+datagen = ImageDataGenerator(rotation_range=20, shear_range=0.2, width_shift_range=0.2, height_shift_range=0.2,
+                                 zoom_range=0.2,
+                                 vertical_flip=True, horizontal_flip=True, fill_mode='constant', cval=0)
+```
+
 # Models and methods
 
 In this project, we implemented
@@ -64,7 +75,7 @@ Here we simulate the approximate distribution of TA-provided dataset. It is comp
   </tr>
 </table>
  
-## Requirements
+# Requirements
 
 - `tensorflow`
 - `pytorch`
