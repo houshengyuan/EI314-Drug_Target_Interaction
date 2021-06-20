@@ -1,11 +1,11 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-from utils import *
+from MAC.utils import *
 import matplotlib.pyplot as plt
 import time
 from torch.utils.data import SequentialSampler
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
-from models import device as train_device, MPNN_CNN
+from MAC.models import device as train_device, MPNN_CNN
 import argparse
 
 #random seed and log file
@@ -100,11 +100,11 @@ def argparser():
     parser.add_argument(
         '--cnn_target_kernels',
         type=list,
-        default=[24,48,96],
+        default=[24,48,72],
         help='cnn target kernels'
     )
     parser.add_argument(
-        '--modelpath',
+        '--model_path',
         type=str,
         default="model",
         help='model path'

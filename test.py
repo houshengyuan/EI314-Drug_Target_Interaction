@@ -1,6 +1,5 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-import pandas as pd
 from MAC.main import *
 import argparse
 from torch import nn
