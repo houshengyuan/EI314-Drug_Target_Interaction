@@ -60,7 +60,7 @@ Here we simulate the approximate distribution of TA-provided dataset. It is comp
 
 <table>
   <tr>
-    <td><img src="img/real-world_test.png" width=500 height=270></td>
+    <td><img src="img/real-world_test.png" width=400 height=270></td>
   </tr>
 </table>
  
