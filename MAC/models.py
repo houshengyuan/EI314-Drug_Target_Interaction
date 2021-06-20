@@ -29,6 +29,9 @@ class MPNN_CNN(nn.Sequential):
 
 class Classifier(nn.Sequential):  # self-defined
     def __init__(self, **config):
+        """
+        Simple concatenation with subsequent Multi-layer Perceptron
+        """
         super(Classifier, self).__init__()
         self.input_dim_drug = config['hidden_dim_drug']
         self.input_dim_protein = config['hidden_dim_protein']
