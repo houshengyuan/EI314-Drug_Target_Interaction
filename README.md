@@ -32,19 +32,19 @@ Here is one example for training data (raw image and corresponding label):
 
 <table>
   <tr>
-    <td><img src="img/MAC.png" width=400 height=250></td>
+    <td><img src="img/MAC.png" width=500 height=250></td>
   </tr>
 </table>
  
 <table>
   <tr>
-    <td><img src="img/MPNN.png" width=400 height=250></td>
+    <td><img src="img/MPNN.png" width=500 height=250></td>
   </tr>
 </table>
 
 <table>
   <tr>
-    <td><img src="img/CNN-attention.png" width=400 height=250></td>
+    <td><img src="img/CNN-attention.png" width=500 height=250></td>
   </tr>
 </table>
  
@@ -83,6 +83,7 @@ After that, we get an augmented dataset of **10000** images. Here is one example
 - `pandas`
 - `sklearn`
 - `rdkit`
+- `pickle`
 
 
 # Group Members
