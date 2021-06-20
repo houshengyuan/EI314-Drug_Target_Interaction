@@ -32,9 +32,9 @@ Here is one example for training data (raw image and corresponding label):
 
 <table>
   <tr>
-    <td><img src="img/MAC.png" width=300 height=300></td>
-    <td><img src="img/MPNN.png" width=300 height=300></td>
-    <td><img src="img/CNN-attention.png" width=300 height=300></td>
+    <td><img src="img/MAC.png" width=350 height=300></td>
+    <td><img src="img/MPNN.png" width=350 height=300></td>
+    <td><img src="img/CNN-attention.png" width=350 height=300></td>
   </tr>
 </table>
  
