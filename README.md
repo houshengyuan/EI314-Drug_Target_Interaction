@@ -1,20 +1,6 @@
 # Drug-Target Interaction Prediction
 This is the course project for EI314-Bioinformatics
-Image segmentation is the process of assigning a label to every pixel 
-in an image such that pixels with the same label share certain visual characteristics. 
-In this project, we try to solve the problem in ISBI challenge where a full stack of EM slices will be used to train 
-machine learning algorithms for the purpose of automatic segmentation of neural structures.
-The images are representative of actual images in the real-world, containing some noise and small image alignment errors. 
-None of these problems led to any difficulties in the manual labeling of each element in the image stack by an expert 
-human neuroanatomist. 
-
-The aim of the challenge is to compare and rank the different competing methods based on their
-pixel and object classification accuracy. The accuracy of segmentation is very important for medical images, because 
-the edge segmentation error 
-will lead to unreliable results, in that case it will be rejected for clinical application.
-Obtaining these sample images to train the model may be a resource consuming process because of the need for high-quality, 
-uncompressed and accurately annotated images reviewed by professionals.
-Therefore, the algorithm designed for medical imaging must achieve high performance and accuracy with less data samples.
+Drug Target Interaction (DTI) prediction now has attracted a large number of scholars to dig in because of its potential practical values including shortening drug development cycle, exploring new applications of existing drugs and providing personalized drugs recommendation for patients. The existing DTI research methods include Docking method, Similarity Based method and Deep Learning. In this paper, our research group raised a new frame called MAC, which combines Message Passing Neural Network(MPNN) and CNN respectively for the encoding of Drugs and Proteins. MAC has outstanding ability to learn and extract the spatial features of drug molecules and excellent ability to accurately locate proteins' action sites because of MPNN and attention mechanism so that MAC achieved Accuracy=0.99 and F1=0.98 on the dataset provided by TA. Subsequent control variate experiments, robustness test and visualization verified the structural effectiveness, strong robustness and great interpretability of MAC.
 
 # Models and methods
 
