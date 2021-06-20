@@ -53,7 +53,7 @@ Here is one example for training data (raw image and corresponding label):
   </tr>
 </table>
  
-# Data Augmentation
+# Visualization of Drug-target Interaction
 
 For the fact that the training data size is too small (we have only 25 training images),
 we apply image augmentation by:
@@ -68,8 +68,8 @@ datagen = ImageDataGenerator(rotation_range=20, shear_range=0.2, width_shift_ran
 After that, we get an augmented dataset of **10000** images. Here is one example for augmented training data:
 <table>
   <tr>
-    <td><img src="/dataset/aug/0_24.png" width=270 height=270></td>
-    <td><img src="/dataset/aug_lb/0_24.png" width=270 height=270></td>
+    <td><img src="img/global_interaction.png" width=270 height=270></td>
+    <td><img src="img/local_interaction.png" width=270 height=270></td>
   </tr>
  </table>
 
