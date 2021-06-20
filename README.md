@@ -57,7 +57,7 @@ Here is one example for training data (raw image and corresponding label):
 
 By outputing Attention Layer's weight distribution, our research group achieved the visualization of the action sites of specific protein and drug with the power of Discovery Studio.
 
-The output of Attention Layer has the same size as the embedding of proteins. And the higher weight means certain part of the protein and the given drug has greater interactive force, which can be taken as action site. In Figure , yellow part of protein denotes potential interaction site and blue molecule is the chosen drug. 
+The output of Attention Layer has the same size as the embedding of proteins. And the higher weight means certain part of the protein and the given drug has greater interactive force, which can be taken as action site. In the following two figures , yellow part of protein denotes potential interaction site and blue molecule is the chosen drug. 
 
 <table>
   <tr>
