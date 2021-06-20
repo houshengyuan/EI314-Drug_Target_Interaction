@@ -25,10 +25,9 @@ In this project, we implemented
 - [MAC] (By Shengyuan Hou Using pytorch)
 
 # MAC
-The data description is same with ISBI Challenge except that we split the raw train data set (consist of 30 samples) into two parts: the new train set and new
-test set. The downloaded data set consists of 30 samples, 25 for train and 5 for test. We simply train our model on the newly split data sets and did not use pre-training models. 
+After reproducing MolTrans, DeepDTA and DeepCDA mentioned above and analyzing their merit and demerit, we propose our own model for DTI prediction named MAC inspired by [DeepPurpose](https://github.com/kexinhuang12345/DeepPurpose) Library, which means the combination of MPNN(Message Passing Neural Network), Attention Mechanism and CNN. To describe more clear, we use MPNN to fetch drugs' representation vector and attentioned CNN to that of proteins. Then we combine two representation vectors and use fully connected layers and dropout layers to output our results
 
-Here is one example for training data (raw image and corresponding label):
+Here are the overall architecture and detailed description of every single part:
 ## MAC
 
 <table>
