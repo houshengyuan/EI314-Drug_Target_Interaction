@@ -19,10 +19,10 @@ Therefore, the algorithm designed for medical imaging must achieve high performa
 # Models and methods
 
 In this project, we implemented
-- [DeepDTA](https://arxiv.org/pdf/1505.04597.pdf)(By Shengyuan Hou Using tensorflow)
-- [DeepCDA](https://arxiv.org/pdf/1807.10165.pdf)(By Chun Chi Using tensorflow)
-- [Moltrans](https://arxiv.org/pdf/1903.02740.pdf)(By Yifan Liu Using tensorflow)
-- [MAC](By Shengyuan Hou Using pytorch)
+- [DeepDTA](https://arxiv.org/pdf/1505.04597.pdf) (By Shengyuan Hou Using tensorflow)
+- [DeepCDA](https://arxiv.org/pdf/1807.10165.pdf) (By Chun Chi Using tensorflow)
+- [Moltrans](https://arxiv.org/pdf/1903.02740.pdf) (By Yifan Liu Using tensorflow)
+- [MAC] (By Shengyuan Hou Using pytorch)
 
 # MAC
 The data description is same with ISBI Challenge except that we split the raw train data set (consist of 30 samples) into two parts: the new train set and new
