@@ -55,17 +55,10 @@ Here is one example for training data (raw image and corresponding label):
  
 # Visualization of Drug-target Interaction
 
-For the fact that the training data size is too small (we have only 25 training images),
-we apply image augmentation by:
+By outputing Attention Layer's weight distribution, our research group achieved the visualization of the action sites of specific protein and drug with the power of Discovery Studio.
 
-```
-from keras.preprocessing.image import ImageDataGenerator
+The output of Attention Layer has the same size as the embedding of proteins. And the higher weight means certain part of the protein and the given drug has greater interactive force, which can be taken as action site. In Figure , yellow part of protein denotes potential interaction site and blue molecule is the chosen drug. 
 
-datagen = ImageDataGenerator(rotation_range=20, shear_range=0.2, width_shift_range=0.2, height_shift_range=0.2,
-                                 zoom_range=0.2,
-                                 vertical_flip=True, horizontal_flip=True, fill_mode='constant', cval=0)
-```
-After that, we get an augmented dataset of **10000** images. Here is one example for augmented training data:
 <table>
   <tr>
     <td><img src="img/global_interaction.png" width=270 height=270></td>
