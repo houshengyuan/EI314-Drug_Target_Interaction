@@ -29,22 +29,27 @@ The data description is same with ISBI Challenge except that we split the raw tr
 test set. The downloaded data set consists of 30 samples, 25 for train and 5 for test. We simply train our model on the newly split data sets and did not use pre-training models. 
 
 Here is one example for training data (raw image and corresponding label):
+## MAC
 
 <table>
   <tr>
-    <td><img src="img/MAC.png" width=500 height=250></td>
-  </tr>
-</table>
- 
-<table>
-  <tr>
-    <td><img src="img/MPNN.png" width=500 height=250></td>
+    <td><img src="img/MAC.png" width=500 height=270></td>
   </tr>
 </table>
 
+## MPNN
+
 <table>
   <tr>
-    <td><img src="img/CNN-attention.png" width=500 height=250></td>
+    <td><img src="img/MPNN.png" width=500 height=270></td>
+  </tr>
+</table>
+
+## Attention-CNN
+
+<table>
+  <tr>
+    <td><img src="img/CNN-attention.png" width=500 height=270></td>
   </tr>
 </table>
  
