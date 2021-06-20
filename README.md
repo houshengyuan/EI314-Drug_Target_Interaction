@@ -9,13 +9,11 @@ Here, our research group raised a new frame called MAC, which combines Message P
 
 Here is the testing command on test.py. By default, this program reads in **test.csv** and the testing result is automatically saved in file **result.csv**. Please check out whether all of requirement packages have been installed before running this program.
 ```
-cd MAC
-python test.py --model_dir 'model' --test_path '../test.csv' --result_save_path '../result.csv' 
+python test.py --model_dir 'MAC/model' --test_path 'test.csv' --result_save_path 'result.csv' 
 ```
 
 or just take the default arguments
 ```
-cd MAC
 python test.py  
 ```
 
