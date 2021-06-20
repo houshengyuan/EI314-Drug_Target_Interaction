@@ -32,18 +32,13 @@ Here is one example for training data (raw image and corresponding label):
 
 <table>
   <tr>
-    <td><img src="/dataset/train_img/0.png" width=270 height=270></td>
-    <td><img src="/dataset/train_label/0.png" width=270 height=270></td>
+    <td><img src="img/MAC.png" width=270 height=270></td>
+    <td><img src="img/MPNN.png" width=270 height=270></td>
+    <td><img src="img/CNN-attention.png" width=270 height=270></td>
   </tr>
 </table>
  
- 
-<table>
-  <tr>
-    <td><img src="/dataset/train_img/0.png" width=270 height=270></td>
-    <td><img src="/dataset/train_label/0.png" width=270 height=270></td>
-  </tr>
- </table>
+
  
 # Data Augmentation
 
