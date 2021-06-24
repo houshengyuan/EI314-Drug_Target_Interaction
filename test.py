@@ -1,5 +1,7 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
+import torch.nn
+
 from MAC.main import *
 import argparse
 from torch import nn
@@ -53,11 +55,14 @@ def robustness_test(flags):
    model = load_model(model, flags.model_dir)
    y_pred = []
    y_label = []
+   y_output= []
    with torch.no_grad():
       model.eval()
       for i, (v_d, v_p, label) in enumerate(testset_generator):
          v_p = v_p.float().to(train_device)
          score = model(v_d, v_p)
+         softmax=torch.nn.Softmax(dim=1)
+         y_output+=softmax(score.data)[:,0].detach().cpu().numpy().tolist()
          predictions = torch.max(score.data, 1)[1].detach().cpu().numpy()
          label_ids = label.to('cpu').numpy()
          y_label = y_label + label_ids.flatten().tolist()
@@ -71,7 +76,8 @@ def robustness_test(flags):
 
    #save the prediction result
    print("Saving...")
-   result=pd.DataFrame({'Accuracy':float(accuracy_score(y_label, y_pred)),'F1':float(f1_score(y_label, y_pred))},index=[0])
+   #result=pd.DataFrame({'Accuracy':float(accuracy_score(y_label, y_pred)),'F1':float(f1_score(y_label, y_pred))},index=[0])
+   result = pd.DataFrame({'Label': y_output})
    result.to_csv(flags.result_save_path,index=False)
    print("Successfully saved in "+flags.result_save_path)
 

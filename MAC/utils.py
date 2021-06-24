@@ -47,10 +47,15 @@ def read_file_training_dataset_drug_target_pairs(path):
                 values = aline.strip('\n').split(',')
                 a=values[0]
                 b=values[1]
-                c=float(values[2])
+                c=None
+                if len(values) == 3:
+                    c=float(values[2])
                 X_drug.append(a)
                 X_target.append(b)
-                y.append(c)
+                if len(values) == 3:
+                    y.append(c)
+                else:
+                    y.append(0.0)
             except:
                 continue
     return np.array(X_drug), np.array(X_target), np.array(y)
